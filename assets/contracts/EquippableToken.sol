@@ -202,13 +202,9 @@ contract EquippableToken is
      * @param tokenId ID of the token for which the root owner is being retrieved
      * @return address Address of the root owner of the given token
      */
-    function ownerOf(uint256 tokenId)
-        public
-        view
-        virtual
-        override(INestable, IERC721)
-        returns (address)
-    {
+    function ownerOf(
+        uint256 tokenId
+    ) public view virtual override(INestable, IERC721) returns (address) {
         (address owner, uint256 ownerTokenId, bool isNft) = directOwnerOf(
             tokenId
         );
@@ -221,12 +217,9 @@ contract EquippableToken is
     /**
      * @inheritdoc IERC165
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual returns (bool) {
         return
             interfaceId == type(IERC165).interfaceId ||
             interfaceId == type(IERC721).interfaceId ||
@@ -246,12 +239,9 @@ contract EquippableToken is
     /**
      * @inheritdoc IERC721
      */
-    function getApproved(uint256 tokenId)
-        public
-        view
-        virtual
-        returns (address)
-    {
+    function getApproved(
+        uint256 tokenId
+    ) public view virtual returns (address) {
         _requireMinted(tokenId);
 
         return _tokenApprovals[tokenId][ownerOf(tokenId)];
@@ -260,12 +250,10 @@ contract EquippableToken is
     /**
      * @inheritdoc IERC721
      */
-    function isApprovedForAll(address owner, address operator)
-        public
-        view
-        virtual
-        returns (bool)
-    {
+    function isApprovedForAll(
+        address owner,
+        address operator
+    ) public view virtual returns (bool) {
         return _operatorApprovals[owner][operator];
     }
 
@@ -313,12 +301,10 @@ contract EquippableToken is
      * @param maxChildrenBurns Maximum children to recursively burn
      * @return uint256 The number of recursive burns it took to burn all of the children
      */
-    function burn(uint256 tokenId, uint256 maxChildrenBurns)
-        public
-        virtual
-        onlyApprovedOrDirectOwner(tokenId)
-        returns (uint256)
-    {
+    function burn(
+        uint256 tokenId,
+        uint256 maxChildrenBurns
+    ) public virtual onlyApprovedOrDirectOwner(tokenId) returns (uint256) {
         return _burn(tokenId, maxChildrenBurns);
     }
 
@@ -576,11 +562,10 @@ contract EquippableToken is
      * @param maxChildrenBurns Maximum children to recursively burn
      * @return uint256 The number of recursive burns it took to burn all of the children
      */
-    function _burn(uint256 tokenId, uint256 maxChildrenBurns)
-        internal
-        virtual
-        returns (uint256)
-    {
+    function _burn(
+        uint256 tokenId,
+        uint256 maxChildrenBurns
+    ) internal virtual returns (uint256) {
         (address immediateOwner, uint256 parentId, ) = directOwnerOf(tokenId);
         address owner = ownerOf(tokenId);
         _balances[immediateOwner] -= 1;
@@ -727,16 +712,9 @@ contract EquippableToken is
      *  should be `0`
      * @return bool A boolean value signifying whether the immediate owner is a token (`true`) or not (`false`)
      */
-    function directOwnerOf(uint256 tokenId)
-        public
-        view
-        virtual
-        returns (
-            address,
-            uint256,
-            bool
-        )
-    {
+    function directOwnerOf(
+        uint256 tokenId
+    ) public view virtual returns (address, uint256, bool) {
         DirectOwner memory owner = _directOwners[tokenId];
         if (owner.ownerAddress == address(0)) revert ERC721InvalidTokenId();
 
@@ -755,12 +733,9 @@ contract EquippableToken is
      * @return struct[] An array of Child structs containing the parent token's active child tokens
      */
 
-    function childrenOf(uint256 parentId)
-        public
-        view
-        virtual
-        returns (Child[] memory)
-    {
+    function childrenOf(
+        uint256 parentId
+    ) public view virtual returns (Child[] memory) {
         Child[] memory children = _activeChildren[parentId];
         return children;
     }
@@ -777,12 +752,9 @@ contract EquippableToken is
      * @return struct[] An array of Child structs containing the parent token's pending child tokens
      */
 
-    function pendingChildrenOf(uint256 parentId)
-        public
-        view
-        virtual
-        returns (Child[] memory)
-    {
+    function pendingChildrenOf(
+        uint256 parentId
+    ) public view virtual returns (Child[] memory) {
         Child[] memory pendingChildren = _pendingChildren[parentId];
         return pendingChildren;
     }
@@ -799,12 +771,10 @@ contract EquippableToken is
      * @param index Index of the child token in the parent token's active child tokens array
      * @return struct A Child struct containing data about the specified child
      */
-    function childOf(uint256 parentId, uint256 index)
-        public
-        view
-        virtual
-        returns (Child memory)
-    {
+    function childOf(
+        uint256 parentId,
+        uint256 index
+    ) public view virtual returns (Child memory) {
         if (childrenOf(parentId).length <= index) revert ChildIndexOutOfRange();
         Child memory child = _activeChildren[parentId][index];
         return child;
@@ -822,12 +792,10 @@ contract EquippableToken is
      * @param index Index of the child token in the parent token's pending child tokens array
      * @return struct A Child struct containting data about the specified child
      */
-    function pendingChildOf(uint256 parentId, uint256 index)
-        public
-        view
-        virtual
-        returns (Child memory)
-    {
+    function pendingChildOf(
+        uint256 parentId,
+        uint256 index
+    ) public view virtual returns (Child memory) {
         if (pendingChildrenOf(parentId).length <= index)
             revert PendingChildIndexOutOfRange();
         Child memory child = _pendingChildren[parentId][index];
@@ -841,12 +809,10 @@ contract EquippableToken is
      * @return bool A boolean value signifying whether the given child token is included in an active child tokens array
      *  of a token (`true`) or not (`false`)
      */
-    function childIsInActive(address childAddress, uint256 childId)
-        public
-        view
-        virtual
-        returns (bool)
-    {
+    function childIsInActive(
+        address childAddress,
+        uint256 childId
+    ) public view virtual returns (bool) {
         return _childIsInActive[childAddress][childId] != 0;
     }
 
@@ -922,11 +888,10 @@ contract EquippableToken is
      *  rootOwner of the previous parent.
      * @param tokenId ID of the parent token for which to reject all of the pending tokens
      */
-    function rejectAllChildren(uint256 tokenId, uint256 maxRejections)
-        public
-        virtual
-        onlyApprovedOrOwner(tokenId)
-    {
+    function rejectAllChildren(
+        uint256 tokenId,
+        uint256 maxRejections
+    ) public virtual onlyApprovedOrOwner(tokenId) {
         _rejectAllChildren(tokenId, maxRejections);
     }
 
@@ -1133,10 +1098,10 @@ contract EquippableToken is
      * @param maxRejections Maximum number of expected children to reject, used to prevent from
      *  rejecting children which arrive just before this operation.
      */
-    function _rejectAllChildren(uint256 tokenId, uint256 maxRejections)
-        internal
-        virtual
-    {
+    function _rejectAllChildren(
+        uint256 tokenId,
+        uint256 maxRejections
+    ) internal virtual {
         if (_pendingChildren[tokenId].length > maxRejections)
             revert UnexpectedNumberOfChildren();
 
@@ -1294,12 +1259,9 @@ contract EquippableToken is
      * @param tokenId ID of the token we are checking
      * @return address Address of the account that is approved to manage the token
      */
-    function getApprovedForAssets(uint256 tokenId)
-        public
-        view
-        virtual
-        returns (address)
-    {
+    function getApprovedForAssets(
+        uint256 tokenId
+    ) public view virtual returns (address) {
         _requireMinted(tokenId);
         return _tokenApprovalsForAssets[tokenId][ownerOf(tokenId)];
     }
@@ -1307,12 +1269,10 @@ contract EquippableToken is
     /**
      * @inheritdoc IMultiAsset
      */
-    function getAssetMetadata(uint256 tokenId, uint64 assetId)
-        public
-        view
-        virtual
-        returns (string memory)
-    {
+    function getAssetMetadata(
+        uint256 tokenId,
+        uint64 assetId
+    ) public view virtual returns (string memory) {
         if (!_tokenAssets[tokenId][assetId]) revert TokenDoesNotHaveAsset();
         return _assets[assetId];
     }
@@ -1320,60 +1280,47 @@ contract EquippableToken is
     /**
      * @inheritdoc IMultiAsset
      */
-    function getActiveAssets(uint256 tokenId)
-        public
-        view
-        virtual
-        returns (uint64[] memory)
-    {
+    function getActiveAssets(
+        uint256 tokenId
+    ) public view virtual returns (uint64[] memory) {
         return _activeAssets[tokenId];
     }
 
     /**
      * @inheritdoc IMultiAsset
      */
-    function getPendingAssets(uint256 tokenId)
-        public
-        view
-        virtual
-        returns (uint64[] memory)
-    {
+    function getPendingAssets(
+        uint256 tokenId
+    ) public view virtual returns (uint64[] memory) {
         return _pendingAssets[tokenId];
     }
 
     /**
      * @inheritdoc IMultiAsset
      */
-    function getActiveAssetPriorities(uint256 tokenId)
-        public
-        view
-        virtual
-        returns (uint16[] memory)
-    {
+    function getActiveAssetPriorities(
+        uint256 tokenId
+    ) public view virtual returns (uint16[] memory) {
         return _activeAssetPriorities[tokenId];
     }
 
     /**
      * @inheritdoc IMultiAsset
      */
-    function getAssetReplacements(uint256 tokenId, uint64 newAssetId)
-        public
-        view
-        virtual
-        returns (uint64)
-    {
+    function getAssetReplacements(
+        uint256 tokenId,
+        uint64 newAssetId
+    ) public view virtual returns (uint64) {
         return _assetReplacements[tokenId][newAssetId];
     }
 
     /**
      * @inheritdoc IMultiAsset
      */
-    function isApprovedForAllForAssets(address owner, address operator)
-        public
-        view
-        virtual
-        returns (bool)
-    {
+    function isApprovedForAllForAssets(
+        address owner,
+        address operator
+    ) public view virtual returns (bool) {
         return _operatorApprovalsForAssets[owner][operator];
     }
 
@@ -1399,10 +1346,10 @@ contract EquippableToken is
     /**
      * @inheritdoc IMultiAsset
      */
-    function setApprovalForAllForAssets(address operator, bool approved)
-        public
-        virtual
-    {
+    function setApprovalForAllForAssets(
+        address operator,
+        bool approved
+    ) public virtual {
         address owner = _msgSender();
         if (owner == operator) revert ApprovalForAssetsToCurrentOwner();
 
@@ -1463,11 +1410,10 @@ contract EquippableToken is
      * @param maxRejections Maximum number of expected assets to reject, used to prevent from rejecting assets which
      *  arrive just before this operation.
      */
-    function rejectAllAssets(uint256 tokenId, uint256 maxRejections)
-        public
-        virtual
-        onlyApprovedForAssetsOrOwner(tokenId)
-    {
+    function rejectAllAssets(
+        uint256 tokenId,
+        uint256 maxRejections
+    ) public virtual onlyApprovedForAssetsOrOwner(tokenId) {
         _rejectAllAssets(tokenId, maxRejections);
     }
 
@@ -1485,11 +1431,10 @@ contract EquippableToken is
      * @param tokenId ID of the token to set the priorities for
      * @param priorities An array of priority values
      */
-    function setPriority(uint256 tokenId, uint16[] calldata priorities)
-        public
-        virtual
-        onlyApprovedForAssetsOrOwner(tokenId)
-    {
+    function setPriority(
+        uint256 tokenId,
+        uint16[] calldata priorities
+    ) public virtual onlyApprovedForAssetsOrOwner(tokenId) {
         _setPriority(tokenId, priorities);
     }
 
@@ -1638,10 +1583,10 @@ contract EquippableToken is
      * @param maxRejections Maximum number of expected assets to reject, used to prevent from
      *  rejecting assets which arrive just before this operation.
      */
-    function _rejectAllAssets(uint256 tokenId, uint256 maxRejections)
-        internal
-        virtual
-    {
+    function _rejectAllAssets(
+        uint256 tokenId,
+        uint256 maxRejections
+    ) internal virtual {
         uint256 len = _pendingAssets[tokenId].length;
         if (len > maxRejections) revert UnexpectedNumberOfAssets();
 
@@ -1669,10 +1614,10 @@ contract EquippableToken is
      * @param tokenId ID of the token for which the priorities are being set
      * @param priorities Array of priorities for the assets
      */
-    function _setPriority(uint256 tokenId, uint16[] calldata priorities)
-        internal
-        virtual
-    {
+    function _setPriority(
+        uint256 tokenId,
+        uint16[] calldata priorities
+    ) internal virtual {
         uint256 length = priorities.length;
         if (length != _activeAssets[tokenId].length)
             revert BadPriorityListLength();
@@ -1691,10 +1636,10 @@ contract EquippableToken is
      * @param id ID of the asset to assign to the new asset
      * @param metadataURI Metadata URI of the asset
      */
-    function _addAssetEntry(uint64 id, string memory metadataURI)
-        internal
-        virtual
-    {
+    function _addAssetEntry(
+        uint64 id,
+        string memory metadataURI
+    ) internal virtual {
         if (id == uint64(0)) revert IdZeroForbidden();
         if (bytes(_assets[id]).length > 0) revert AssetAlreadyExists();
 
@@ -1773,16 +1718,14 @@ contract EquippableToken is
     /**
      * @inheritdoc IEquippable
      */
-    function getAssetAndEquippableData(uint256 tokenId, uint64 assetId)
+    function getAssetAndEquippableData(
+        uint256 tokenId,
+        uint64 assetId
+    )
         public
         view
         virtual
-        returns (
-            string memory,
-            uint64,
-            address,
-            uint64[] memory
-        )
+        returns (string memory, uint64, address, uint64[] memory)
     {
         return (
             getAssetMetadata(tokenId, assetId),
@@ -1817,12 +1760,9 @@ contract EquippableToken is
      *  ]
      * @param data An `IntakeEquip` struct specifying the equip data
      */
-    function equip(IntakeEquip memory data)
-        public
-        virtual
-        onlyApprovedOrOwner(data.tokenId)
-        nonReentrant
-    {
+    function equip(
+        IntakeEquip memory data
+    ) public virtual onlyApprovedOrOwner(data.tokenId) nonReentrant {
         _equip(data);
     }
 
@@ -1934,6 +1874,8 @@ contract EquippableToken is
         ];
         if (equipment.childEquippableAddress == address(0))
             revert NotEquipped();
+        _beforeUnequip(tokenId, assetId, slotPartId);
+
         delete _equipments[tokenId][targetBaseAddress][slotPartId];
         _equipCountPerChild[tokenId][equipment.childEquippableAddress][
             equipment.childId
@@ -1947,6 +1889,7 @@ contract EquippableToken is
             equipment.childEquippableAddress,
             equipment.childAssetId
         );
+        _afterUnequip(tokenId, assetId, slotPartId);
     }
 
     /**
@@ -2016,12 +1959,10 @@ contract EquippableToken is
      * @param tokenId ID of the token being checked
      * @return bool The boolean value indicating whether the `spender` is approved to manage the given token
      */
-    function _isApprovedOrOwner(address spender, uint256 tokenId)
-        internal
-        view
-        virtual
-        returns (bool)
-    {
+    function _isApprovedOrOwner(
+        address spender,
+        uint256 tokenId
+    ) internal view virtual returns (bool) {
         address owner = ownerOf(tokenId);
         return (spender == owner ||
             isApprovedForAll(owner, spender) ||
@@ -2035,12 +1976,10 @@ contract EquippableToken is
      * @return bool The boolean value indicating whether the `spender` is approved to manage the given token or its
      *  direct owner
      */
-    function _isApprovedOrDirectOwner(address spender, uint256 tokenId)
-        internal
-        view
-        virtual
-        returns (bool)
-    {
+    function _isApprovedOrDirectOwner(
+        address spender,
+        uint256 tokenId
+    ) internal view virtual returns (bool) {
         (address owner, uint256 parentId, ) = directOwnerOf(tokenId);
         // When the parent is an NFT, only it can do operations
         if (parentId != 0) {
@@ -2061,12 +2000,10 @@ contract EquippableToken is
      * @param tokenId ID of the token to query for permission for a given `user`
      * @return bool A boolean value indicating whether the user is approved to manage the token or not
      */
-    function _isApprovedForAssetsOrOwner(address user, uint256 tokenId)
-        internal
-        view
-        virtual
-        returns (bool)
-    {
+    function _isApprovedForAssetsOrOwner(
+        address user,
+        uint256 tokenId
+    ) internal view virtual returns (bool) {
         address owner = ownerOf(tokenId);
         return (user == owner ||
             isApprovedForAllForAssets(owner, user) ||
@@ -2080,20 +2017,20 @@ contract EquippableToken is
      * @param id ID of the asset
      * @param metadataURI Metadata URI of the asset
      */
-    function _beforeAddAsset(uint64 id, string memory metadataURI)
-        internal
-        virtual
-    {}
+    function _beforeAddAsset(
+        uint64 id,
+        string memory metadataURI
+    ) internal virtual {}
 
     /**
      * @notice Hook that is called after an asset is added.
      * @param id ID of the asset
      * @param metadataURI Metadata URI of the asset
      */
-    function _afterAddAsset(uint64 id, string memory metadataURI)
-        internal
-        virtual
-    {}
+    function _afterAddAsset(
+        uint64 id,
+        string memory metadataURI
+    ) internal virtual {}
 
     /**
      * @notice Hook that is called before adding an asset to a token's pending assets array.
@@ -2186,20 +2123,20 @@ contract EquippableToken is
      * @param tokenId ID of the token for which the asset priorities are being set
      * @param priorities[] An array of priorities for token's active resources
      */
-    function _beforeSetPriority(uint256 tokenId, uint16[] calldata priorities)
-        internal
-        virtual
-    {}
+    function _beforeSetPriority(
+        uint256 tokenId,
+        uint16[] calldata priorities
+    ) internal virtual {}
 
     /**
      * @notice Hook that is called after the priorities for token's assets is set.
      * @param tokenId ID of the token for which the asset priorities have been set
      * @param priorities[] An array of priorities for token's active resources
      */
-    function _afterSetPriority(uint256 tokenId, uint16[] calldata priorities)
-        internal
-        virtual
-    {}
+    function _afterSetPriority(
+        uint256 tokenId,
+        uint16[] calldata priorities
+    ) internal virtual {}
 
     // --------------------- NESTABLE HOOKS ---------------------
 

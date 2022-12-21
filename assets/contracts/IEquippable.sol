@@ -152,7 +152,10 @@ interface IEquippable is IMultiAsset {
      * @return baseAddress The address of the base the part belongs to
      * @return partIds An array of IDs of parts included in the asset
      */
-    function getAssetAndEquippableData(uint256 tokenId, uint64 assetId)
+    function getAssetAndEquippableData(
+        uint256 tokenId,
+        uint64 assetId
+    )
         external
         view
         returns (

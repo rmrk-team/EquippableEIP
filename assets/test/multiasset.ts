@@ -94,13 +94,14 @@ describe('MultiAsset', async () => {
       const resId = 10;
       await token.mint(owner.address, tokenId);
       await expect(token.getAssetMetadata(tokenId, resId)).to.be.revertedWithCustomError(
-        token, 'TokenDoesNotHaveAsset'
+        token,
+        'TokenDoesNotHaveAsset',
       );
     });
 
     it('cannot add asset entry if not issuer', async function () {
       const id = 10;
-      await expect(token.connect(addrs[1]).addAssetEntry(id, metaURIDefault)).to.be.revertedWith( 
+      await expect(token.connect(addrs[1]).addAssetEntry(id, metaURIDefault)).to.be.revertedWith(
         'RMRK: Only issuer',
       );
     });
@@ -124,7 +125,8 @@ describe('MultiAsset', async () => {
       const id = 10;
 
       await token.addAssetEntry(id, metaURIDefault);
-      await expect(token.addAssetEntry(id, metaURIDefault)).to.be.revertedWithCustomError(token, 
+      await expect(token.addAssetEntry(id, metaURIDefault)).to.be.revertedWithCustomError(
+        token,
         'AssetAlreadyExists',
       );
     });
@@ -132,7 +134,8 @@ describe('MultiAsset', async () => {
     it('cannot add asset with id 0', async function () {
       const id = ethers.utils.hexZeroPad('0x0', 8);
 
-      await expect(token.addAssetEntry(id, metaURIDefault)).to.be.revertedWithCustomError(token, 
+      await expect(token.addAssetEntry(id, metaURIDefault)).to.be.revertedWithCustomError(
+        token,
         'IdZeroForbidden',
       );
     });
@@ -142,7 +145,8 @@ describe('MultiAsset', async () => {
 
       await expect(token.addAssetEntry(id, metaURIDefault)).to.emit(token, 'AssetSet').withArgs(id);
 
-      await expect(token.addAssetEntry(id, metaURIDefault)).to.be.revertedWithCustomError(token, 
+      await expect(token.addAssetEntry(id, metaURIDefault)).to.be.revertedWithCustomError(
+        token,
         'AssetAlreadyExists',
       );
     });
@@ -172,7 +176,8 @@ describe('MultiAsset', async () => {
 
       await token.mint(owner.address, tokenId);
       await expect(token.addAssetToToken(tokenId, resId, 0)).to.be.revertedWithCustomError(
-        token, 'NoAssetMatchingId'
+        token,
+        'NoAssetMatchingId',
       );
     });
 
@@ -210,7 +215,8 @@ describe('MultiAsset', async () => {
       // Now it's full, next should fail
       const resId = 129;
       await addAssets([resId]);
-      await expect(token.addAssetToToken(tokenId, resId, 0)).to.be.revertedWithCustomError(token, 
+      await expect(token.addAssetToToken(tokenId, resId, 0)).to.be.revertedWithCustomError(
+        token,
         'MaxPendingAssetsReached',
       );
     });
@@ -294,16 +300,17 @@ describe('MultiAsset', async () => {
       await token.mint(owner.address, tokenId);
       await addAssets([resId]);
       await token.addAssetToToken(tokenId, resId, 0);
-      await expect(token.connect(addrs[1]).acceptAsset(tokenId, 0, resId)).to.be.revertedWithCustomError(token, 
-        'NotApprovedForAssetsOrOwner',
-      );
+      await expect(
+        token.connect(addrs[1]).acceptAsset(tokenId, 0, resId),
+      ).to.be.revertedWithCustomError(token, 'NotApprovedForAssetsOrOwner');
     });
 
     it('cannot accept non existing asset', async function () {
       const tokenId = 1;
 
       await token.mint(owner.address, tokenId);
-      await expect(token.acceptAsset(tokenId, 0, 1)).to.be.revertedWithCustomError(token, 
+      await expect(token.acceptAsset(tokenId, 0, 1)).to.be.revertedWithCustomError(
+        token,
         'IndexOutOfRange',
       );
     });
@@ -476,19 +483,20 @@ describe('MultiAsset', async () => {
       await addAssets([resId]);
       await token.addAssetToToken(tokenId, resId, 0);
 
-      await expect(token.connect(addrs[1]).rejectAsset(tokenId, 0, resId)).to.be.revertedWithCustomError(token, 
-        'NotApprovedForAssetsOrOwner',
-      );
-      await expect(token.connect(addrs[1]).rejectAllAssets(tokenId, 1)).to.be.revertedWithCustomError(token, 
-        'NotApprovedForAssetsOrOwner',
-      );
+      await expect(
+        token.connect(addrs[1]).rejectAsset(tokenId, 0, resId),
+      ).to.be.revertedWithCustomError(token, 'NotApprovedForAssetsOrOwner');
+      await expect(
+        token.connect(addrs[1]).rejectAllAssets(tokenId, 1),
+      ).to.be.revertedWithCustomError(token, 'NotApprovedForAssetsOrOwner');
     });
 
     it('cannot reject non existing asset', async function () {
       const tokenId = 1;
 
       await token.mint(owner.address, tokenId);
-      await expect(token.rejectAsset(tokenId, 0, 1)).to.be.revertedWithCustomError(token, 
+      await expect(token.rejectAsset(tokenId, 0, 1)).to.be.revertedWithCustomError(
+        token,
         'IndexOutOfRange',
       );
     });
@@ -509,25 +517,28 @@ describe('MultiAsset', async () => {
     it('cannot set priorities for non owned token', async function () {
       const tokenId = 1;
       await addAssetsToToken(tokenId);
-      await expect(token.connect(addrs[1]).setPriority(tokenId, [2, 1])).to.be.revertedWithCustomError(token, 
-        'NotApprovedForAssetsOrOwner',
-      );
+      await expect(
+        token.connect(addrs[1]).setPriority(tokenId, [2, 1]),
+      ).to.be.revertedWithCustomError(token, 'NotApprovedForAssetsOrOwner');
     });
 
     it('cannot set different number of priorities', async function () {
       const tokenId = 1;
       await addAssetsToToken(tokenId);
-      await expect(token.setPriority(tokenId, [1])).to.be.revertedWithCustomError(token, 
+      await expect(token.setPriority(tokenId, [1])).to.be.revertedWithCustomError(
+        token,
         'BadPriorityListLength',
       );
-      await expect(token.setPriority(tokenId, [2, 1, 3])).to.be.revertedWithCustomError(token, 
+      await expect(token.setPriority(tokenId, [2, 1, 3])).to.be.revertedWithCustomError(
+        token,
         'BadPriorityListLength',
       );
     });
 
     it('cannot set priorities for non existing token', async function () {
       const tokenId = 1;
-      await expect(token.connect(addrs[1]).setPriority(tokenId, [])).to.be.revertedWithCustomError(token, 
+      await expect(token.connect(addrs[1]).setPriority(tokenId, [])).to.be.revertedWithCustomError(
+        token,
         'ERC721InvalidTokenId',
       );
     });
@@ -565,10 +576,12 @@ describe('MultiAsset', async () => {
 
       await token.connect(tokenOwner)['burn(uint256)'](tokenId);
 
-      await expect(token.getApproved(tokenId)).to.be.revertedWithCustomError(token, 
+      await expect(token.getApproved(tokenId)).to.be.revertedWithCustomError(
+        token,
         'ERC721InvalidTokenId',
       );
-      await expect(token.getApprovedForAssets(tokenId)).to.be.revertedWithCustomError(token, 
+      await expect(token.getApprovedForAssets(tokenId)).to.be.revertedWithCustomError(
+        token,
         'ERC721InvalidTokenId',
       );
     });

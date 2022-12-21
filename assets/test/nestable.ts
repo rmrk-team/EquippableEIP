@@ -637,7 +637,16 @@ describe('NestableToken', function () {
       await expect(
         parent
           .connect(tokenOwner)
-          .transferChild(parentId, toOwnerAddress, 0, badIndex, child.address, childId1, false, '0x'),
+          .transferChild(
+            parentId,
+            toOwnerAddress,
+            0,
+            badIndex,
+            child.address,
+            childId1,
+            false,
+            '0x',
+          ),
       ).to.be.revertedWithCustomError(parent, 'ChildIndexOutOfRange');
     });
 
@@ -702,7 +711,9 @@ describe('NestableToken', function () {
       const toOwner = tokenOwner.address;
       const notOwner = addrs[3];
       await expect(
-        parent.connect(notOwner).transferChild(parentId, toOwner, 0, 0, child.address, childId1, false, '0x'),
+        parent
+          .connect(notOwner)
+          .transferChild(parentId, toOwner, 0, 0, child.address, childId1, false, '0x'),
       ).to.be.revertedWithCustomError(child, 'ERC721NotApprovedOrOwner');
     });
 
@@ -797,7 +808,16 @@ describe('NestableToken', function () {
       await expect(
         parent
           .connect(tokenOwner)
-          .transferChild(parentId, toOwnerAddress, 0, badIndex, child.address, childId1, true, '0x'),
+          .transferChild(
+            parentId,
+            toOwnerAddress,
+            0,
+            badIndex,
+            child.address,
+            childId1,
+            true,
+            '0x',
+          ),
       ).to.be.revertedWithCustomError(parent, 'PendingChildIndexOutOfRange');
     });
 
@@ -824,7 +844,7 @@ describe('NestableToken', function () {
 
       await parent
         .connect(transferer)
-        .transferChild(parentId, toOwner, 0, 0,child.address, childId1, true, '0x');
+        .transferChild(parentId, toOwner, 0, 0, child.address, childId1, true, '0x');
       await checkChildMovedToRootOwner();
     });
 
@@ -862,7 +882,9 @@ describe('NestableToken', function () {
       const toOwner = tokenOwner.address;
       const notOwner = addrs[3];
       await expect(
-        parent.connect(notOwner).transferChild(parentId, toOwner, 0, 0, child.address, childId1, true, '0x'),
+        parent
+          .connect(notOwner)
+          .transferChild(parentId, toOwner, 0, 0, child.address, childId1, true, '0x'),
       ).to.be.revertedWithCustomError(child, 'ERC721NotApprovedOrOwner');
     });
 

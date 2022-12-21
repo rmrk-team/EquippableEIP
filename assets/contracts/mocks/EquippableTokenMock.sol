@@ -63,10 +63,10 @@ contract EquippableTokenMock is EquippableToken {
         _addAssetToToken(tokenId, assetId, replacesAssetWithId);
     }
 
-    function addAssetEntry(uint64 id, string memory metadataURI)
-        external
-        onlyIssuer
-    {
+    function addAssetEntry(
+        uint64 id,
+        string memory metadataURI
+    ) external onlyIssuer {
         _addAssetEntry(id, metadataURI);
     }
 

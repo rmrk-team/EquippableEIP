@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.16;
 
-
 interface INestable {
     struct DirectOwner {
         uint256 tokenId;
@@ -71,8 +70,10 @@ interface INestable {
         uint256 childId
     ) external;
 
-    function rejectAllChildren(uint256 parentId, uint256 maxRejections)
-        external;
+    function rejectAllChildren(
+        uint256 parentId,
+        uint256 maxRejections
+    ) external;
 
     function transferChild(
         uint256 tokenId,

@@ -65,12 +65,9 @@ contract BaseStorage is IBaseStorage {
     /**
      * @inheritdoc IERC165
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual returns (bool) {
         return
             interfaceId == type(IERC165).interfaceId ||
             interfaceId == type(IBaseStorage).interfaceId;
@@ -180,10 +177,9 @@ contract BaseStorage is IBaseStorage {
      * @dev Can only be called on `Part`s of `Slot` type.
      * @param partId ID of the part that we are clearing the `equippableAddresses` from
      */
-    function _resetEquippableAddresses(uint64 partId)
-        internal
-        onlySlot(partId)
-    {
+    function _resetEquippableAddresses(
+        uint64 partId
+    ) internal onlySlot(partId) {
         delete _parts[partId].equippable;
         delete _isEquippableToAll[partId];
 
@@ -211,11 +207,10 @@ contract BaseStorage is IBaseStorage {
     /**
      * @inheritdoc IBaseStorage
      */
-    function checkIsEquippable(uint64 partId, address targetAddress)
-        public
-        view
-        returns (bool)
-    {
+    function checkIsEquippable(
+        uint64 partId,
+        address targetAddress
+    ) public view returns (bool) {
         // If this is equippable to all, we're good
         bool isEquippable = _isEquippableToAll[partId];
 
@@ -246,11 +241,9 @@ contract BaseStorage is IBaseStorage {
     /**
      * @inheritdoc IBaseStorage
      */
-    function getParts(uint64[] calldata partIds)
-        public
-        view
-        returns (Part[] memory)
-    {
+    function getParts(
+        uint64[] calldata partIds
+    ) public view returns (Part[] memory) {
         uint256 numParts = partIds.length;
         Part[] memory parts = new Part[](numParts);
 
