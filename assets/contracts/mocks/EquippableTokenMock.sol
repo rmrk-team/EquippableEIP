@@ -6,9 +6,30 @@ import "../EquippableToken.sol";
 
 //Minimal public implementation of INestable for testing.
 contract EquippableTokenMock is EquippableToken {
-    constructor() EquippableToken() {}
+    address private _issuer;
 
-    function mint(address to, uint256 tokenId) external {
+    constructor() EquippableToken() {
+        _setIssuer(_msgSender());
+    }
+
+    modifier onlyIssuer() {
+        require(_msgSender() == _issuer, "RMRK: Only issuer");
+        _;
+    }
+
+    function setIssuer(address issuer) external onlyIssuer {
+        _setIssuer(issuer);
+    }
+
+    function _setIssuer(address issuer) private {
+        _issuer = issuer;
+    }
+
+    function getIssuer() external view returns (address) {
+        return _issuer;
+    }
+
+    function mint(address to, uint256 tokenId) external onlyIssuer {
         _mint(to, tokenId);
     }
 
@@ -38,8 +59,15 @@ contract EquippableTokenMock is EquippableToken {
         uint256 tokenId,
         uint64 assetId,
         uint64 replacesAssetWithId
-    ) external {
+    ) external onlyIssuer {
         _addAssetToToken(tokenId, assetId, replacesAssetWithId);
+    }
+
+    function addAssetEntry(uint64 id, string memory metadataURI)
+        external
+        onlyIssuer
+    {
+        _addAssetEntry(id, metadataURI);
     }
 
     function addEquippableAssetEntry(
@@ -48,7 +76,7 @@ contract EquippableTokenMock is EquippableToken {
         address baseAddress,
         string memory metadataURI,
         uint64[] calldata partIds
-    ) external {
+    ) external onlyIssuer {
         _addAssetEntry(
             id,
             equippableGroupId,

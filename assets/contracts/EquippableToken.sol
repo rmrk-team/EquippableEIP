@@ -9,7 +9,6 @@ import "./IEquippable.sol";
 import "./INestable.sol";
 import "./library/EquippableLib.sol";
 import "./security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
@@ -231,7 +230,6 @@ contract EquippableToken is
         return
             interfaceId == type(IERC165).interfaceId ||
             interfaceId == type(IERC721).interfaceId ||
-            interfaceId == type(IERC721Metadata).interfaceId ||
             interfaceId == type(IMultiAsset).interfaceId ||
             interfaceId == type(INestable).interfaceId ||
             interfaceId == type(IEquippable).interfaceId;
