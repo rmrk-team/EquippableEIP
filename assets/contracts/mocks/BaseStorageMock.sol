@@ -1,14 +1,13 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: CC0-1.0
 
 pragma solidity ^0.8.16;
 
 import "../BaseStorage.sol";
 
 contract BaseStorageMock is BaseStorage {
-    constructor(
-        string memory metadataURI,
-        string memory type_
-    ) BaseStorage(metadataURI, type_) {}
+    constructor(string memory metadataURI, string memory type_)
+        BaseStorage(metadataURI, type_)
+    {}
 
     function addPart(IntakeStruct calldata intakeStruct) external {
         _addPart(intakeStruct);

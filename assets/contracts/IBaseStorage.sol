@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: CC0-1.0
 
 pragma solidity ^0.8.16;
 
@@ -127,10 +127,10 @@ interface IBaseStorage is IERC165 {
      * @param targetAddress The address that we are checking for whether the part can be equipped into it or not
      * @return bool The status indicating whether the `targetAddress` can be equipped into `Part` with `partId` or not
      */
-    function checkIsEquippable(
-        uint64 partId,
-        address targetAddress
-    ) external view returns (bool);
+    function checkIsEquippable(uint64 partId, address targetAddress)
+        external
+        view
+        returns (bool);
 
     /**
      * @notice Used to check if the part is equippable by all addresses.
@@ -152,7 +152,8 @@ interface IBaseStorage is IERC165 {
      * @param partIds An array of part IDs that we want to retrieve
      * @return struct An array of `Part` structs associated with given `partIds`
      */
-    function getParts(
-        uint64[] calldata partIds
-    ) external view returns (Part[] memory);
+    function getParts(uint64[] calldata partIds)
+        external
+        view
+        returns (Part[] memory);
 }

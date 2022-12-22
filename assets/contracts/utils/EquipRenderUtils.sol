@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: CC0-1.0
 
 pragma solidity ^0.8.16;
 
@@ -110,10 +110,12 @@ contract EquipRenderUtils {
      * @param tokenId ID of the token to retrieve the extended active assets for
      * @return sturct[] An array of ExtendedActiveAssets present on the given token
      */
-    function getExtendedActiveAssets(
-        address target,
-        uint256 tokenId
-    ) public view virtual returns (ExtendedActiveAsset[] memory) {
+    function getExtendedActiveAssets(address target, uint256 tokenId)
+        public
+        view
+        virtual
+        returns (ExtendedActiveAsset[] memory)
+    {
         IEquippable target_ = IEquippable(target);
 
         uint64[] memory assets = target_.getActiveAssets(tokenId);
@@ -172,10 +174,12 @@ contract EquipRenderUtils {
      * @param tokenId ID of the token to retrieve the extended pending assets for
      * @return sturct[] An array of ExtendedPendingAssets present on the given token
      */
-    function getExtendedPendingAssets(
-        address target,
-        uint256 tokenId
-    ) public view virtual returns (ExtendedPendingAsset[] memory) {
+    function getExtendedPendingAssets(address target, uint256 tokenId)
+        public
+        view
+        virtual
+        returns (ExtendedPendingAsset[] memory)
+    {
         IEquippable target_ = IEquippable(target);
 
         uint64[] memory assets = target_.getPendingAssets(tokenId);

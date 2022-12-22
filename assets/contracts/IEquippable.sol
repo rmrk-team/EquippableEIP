@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: CC0-1.0
 
 pragma solidity ^0.8.16;
 
@@ -152,10 +152,7 @@ interface IEquippable is IMultiAsset {
      * @return baseAddress The address of the base the part belongs to
      * @return partIds An array of IDs of parts included in the asset
      */
-    function getAssetAndEquippableData(
-        uint256 tokenId,
-        uint64 assetId
-    )
+    function getAssetAndEquippableData(uint256 tokenId, uint64 assetId)
         external
         view
         returns (
