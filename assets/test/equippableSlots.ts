@@ -59,8 +59,7 @@ async function setupContextForSlots(
   weaponGem: EquippableTokenMock,
   background: EquippableTokenMock,
 ) {
-  const [, ...signersAddr] = await ethers.getSigners();
-  addrs = signersAddr;
+  [, ...addrs] = await ethers.getSigners();
 
   await setupBase();
 
@@ -308,21 +307,6 @@ async function slotsFixture() {
   return { base, soldier, weapon, weaponGem, background, view };
 }
 
-describe('EquippableTokenMock with Slots', async () => {
-  beforeEach(async function () {
-    const { base, soldier, weapon, weaponGem, background, view } = await loadFixture(slotsFixture);
-
-    this.base = base;
-    this.soldier = soldier;
-    this.weapon = weapon;
-    this.weaponGem = weaponGem;
-    this.background = background;
-    this.view = view;
-  });
-
-  shouldBehaveLikeEquippableWithSlots();
-});
-
 // The general idea is having these tokens: Soldier, Weapon, WeaponGem and Background.
 // Weapon and Background can be equipped into Soldier. WeaponGem can be equipped into Weapon
 // All use a single base.
@@ -330,7 +314,7 @@ describe('EquippableTokenMock with Slots', async () => {
 // Weapon will have 2 assets per weapon, one for full view, one for equipping
 // Background will have a single asset for each, it can be used as full view and to equip
 // Weapon Gems will have 2 enumerated assets, one for full view, one for equipping.
-async function shouldBehaveLikeEquippableWithSlots() {
+describe('EquippableTokenMock with Slots', async () => {
   let base: BaseStorageMock;
   let soldier: EquippableTokenMock;
   let weapon: EquippableTokenMock;
@@ -341,19 +325,8 @@ async function shouldBehaveLikeEquippableWithSlots() {
   let addrs: SignerWithAddress[];
 
   beforeEach(async function () {
-    const [, ...signersAddr] = await ethers.getSigners();
-    addrs = signersAddr;
-
-    base = this.base;
-    soldier = this.soldier;
-    soldier = this.soldier;
-    weapon = this.weapon;
-    weapon = this.weapon;
-    weaponGem = this.weaponGem;
-    weaponGem = this.weaponGem;
-    background = this.background;
-    background = this.background;
-    view = this.view;
+    [, ...addrs] = await ethers.getSigners();
+    ({ base, soldier, weapon, weaponGem, background, view } = await loadFixture(slotsFixture));
   });
 
   describe('Validations', async function () {
@@ -939,7 +912,7 @@ async function shouldBehaveLikeEquippableWithSlots() {
 
     return newWeaponId;
   }
-}
+});
 
 function bn(x: number): BigNumber {
   return BigNumber.from(x);

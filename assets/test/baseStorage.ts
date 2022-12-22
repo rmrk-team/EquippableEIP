@@ -1,10 +1,18 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BaseStorageMock } from '../typechain-types';
 
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+async function baseFixture(): Promise<BaseStorageMock> {
+  const Base = await ethers.getContractFactory('BaseStorageMock');
+  const testBase = await Base.deploy('ipfs//:meta', 'misc');
+  await testBase.deployed();
 
-async function shouldBehaveLikeBase(contractName: string, metadataURI: string, type: string) {
+  return testBase;
+}
+
+describe('BaseStorageMock', async () => {
   let testBase: BaseStorageMock;
 
   let addrs: SignerWithAddress[];
@@ -22,21 +30,17 @@ async function shouldBehaveLikeBase(contractName: string, metadataURI: string, t
   };
 
   beforeEach(async () => {
-    const [, ...signersAddr] = await ethers.getSigners();
-    addrs = signersAddr;
-
-    const Base = await ethers.getContractFactory(contractName);
-    testBase = await Base.deploy(metadataURI, type);
-    await testBase.deployed();
+    [, ...addrs] = await ethers.getSigners();
+    testBase = await loadFixture(baseFixture);
   });
 
   describe('Init Base Storage', async function () {
     it('has right metadataURI', async function () {
-      expect(await testBase.getMetadataURI()).to.equal(metadataURI);
+      expect(await testBase.getMetadataURI()).to.equal('ipfs//:meta');
     });
 
     it('has right type', async function () {
-      expect(await testBase.getType()).to.equal(type);
+      expect(await testBase.getType()).to.equal('misc');
     });
 
     it('supports interface', async function () {
@@ -273,8 +277,4 @@ async function shouldBehaveLikeBase(contractName: string, metadataURI: string, t
       expect(await testBase.checkIsEquippable(partId, addrs[1].address)).to.eql(false);
     });
   });
-}
-
-describe('BaseStorageMock', async () => {
-  shouldBehaveLikeBase('BaseStorageMock', 'ipfs//:meta', 'misc');
 });

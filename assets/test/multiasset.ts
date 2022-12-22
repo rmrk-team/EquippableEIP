@@ -1,12 +1,12 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
   EquippableTokenMock,
   ERC721ReceiverMock,
   MultiAssetRenderUtils,
   NonReceiverMock,
 } from '../typechain-types';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 describe('MultiAsset', async () => {
   let token: EquippableTokenMock;
@@ -20,9 +20,7 @@ describe('MultiAsset', async () => {
   const metaURIDefault = 'metaURI';
 
   beforeEach(async () => {
-    const [signersOwner, ...signersAddr] = await ethers.getSigners();
-    owner = signersOwner;
-    addrs = signersAddr;
+    [owner, ...addrs] = await ethers.getSigners();
 
     const equppableFactory = await ethers.getContractFactory('EquippableTokenMock');
     token = await equppableFactory.deploy();

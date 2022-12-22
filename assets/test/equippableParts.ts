@@ -72,9 +72,7 @@ async function setupContextForParts(
   neon: EquippableTokenMock,
   mask: EquippableTokenMock,
 ) {
-  const [, ...signersAddr] = await ethers.getSigners();
-  addrs = signersAddr;
-
+  [, ...addrs] = await ethers.getSigners();
   await setupBase();
 
   await mintNeons();
@@ -432,39 +430,21 @@ async function partsFixture() {
   return { base, neon, mask, view };
 }
 
-describe('EquippableTokenMock with Parts', async () => {
-  beforeEach(async function () {
-    const { base, neon, mask, view } = await loadFixture(partsFixture);
-
-    this.base = base;
-    this.neon = neon;
-    this.mask = mask;
-    this.view = view;
-  });
-
-  shouldBehaveLikeEquippableWithParts();
-});
-
 // The general idea is having these tokens: Neon and Mask
 // Masks can be equipped into Neons.
 // All use a single base.
 // Neon will use an asset per token, which uses fixed parts to compose the body
 // Mask will have 2 assets per weapon, one for full view, one for equipping. Both are composed using fixed parts
-async function shouldBehaveLikeEquippableWithParts() {
-  let baseContract: BaseStorageMock;
-  let neonContract: EquippableTokenMock;
-  let maskContract: EquippableTokenMock;
-  let viewContract: EquipRenderUtils;
+describe('EquippableTokenMock with Parts', async () => {
+  let base: BaseStorageMock;
+  let neon: EquippableTokenMock;
+  let mask: EquippableTokenMock;
+  let view: EquipRenderUtils;
   let addrs: SignerWithAddress[];
 
   beforeEach(async function () {
-    const [, ...signersAddr] = await ethers.getSigners();
-    addrs = signersAddr;
-
-    baseContract = this.base;
-    neonContract = this.neon;
-    maskContract = this.mask;
-    viewContract = this.view;
+    [, ...addrs] = await ethers.getSigners();
+    ({ base, neon, mask, view } = await loadFixture(partsFixture));
   });
 
   describe('Equip', async function () {
@@ -473,34 +453,23 @@ async function shouldBehaveLikeEquippableWithParts() {
       const childIndex = 0;
       const weaponResId = maskAssetsEquip[0]; // This asset is assigned to weapon first weapon
       await expect(
-        neonContract
+        neon
           .connect(addrs[0])
           .equip([neons[0], childIndex, neonResIds[0], partIdForMask, weaponResId]),
       )
-        .to.emit(neonContract, 'ChildAssetEquipped')
-        .withArgs(
-          neons[0],
-          neonResIds[0],
-          partIdForMask,
-          masks[0],
-          maskContract.address,
-          weaponResId,
-        );
+        .to.emit(neon, 'ChildAssetEquipped')
+        .withArgs(neons[0], neonResIds[0], partIdForMask, masks[0], mask.address, weaponResId);
 
       // All part slots are included on the response:
       const expectedSlots = [bn(partIdForMask)];
-      const expectedEquips = [
-        [bn(neonResIds[0]), bn(weaponResId), bn(masks[0]), maskContract.address],
-      ];
-      expect(await viewContract.getEquipped(neonContract.address, neons[0], neonResIds[0])).to.eql([
+      const expectedEquips = [[bn(neonResIds[0]), bn(weaponResId), bn(masks[0]), mask.address]];
+      expect(await view.getEquipped(neon.address, neons[0], neonResIds[0])).to.eql([
         expectedSlots,
         expectedEquips,
       ]);
 
       // Child is marked as equipped:
-      expect(await neonContract.isChildEquipped(neons[0], maskContract.address, masks[0])).to.eql(
-        true,
-      );
+      expect(await neon.isChildEquipped(neons[0], mask.address, masks[0])).to.eql(true);
     });
 
     it('cannot equip non existing child in slot', async function () {
@@ -508,7 +477,7 @@ async function shouldBehaveLikeEquippableWithParts() {
       const badChildIndex = 3;
       const weaponResId = maskAssetsEquip[0]; // This asset is assigned to weapon first weapon
       await expect(
-        neonContract
+        neon
           .connect(addrs[0])
           .equip([neons[0], badChildIndex, neonResIds[0], partIdForMask, weaponResId]),
       ).to.be.reverted; // Bad index
@@ -519,7 +488,7 @@ async function shouldBehaveLikeEquippableWithParts() {
     it('can compose all parts for neon', async function () {
       const childIndex = 0;
       const weaponResId = maskAssetsEquip[0]; // This asset is assigned to weapon first weapon
-      await neonContract
+      await neon
         .connect(addrs[0])
         .equip([neons[0], childIndex, neonResIds[0], partIdForMask, weaponResId]);
 
@@ -545,21 +514,17 @@ async function shouldBehaveLikeEquippableWithParts() {
           bn(partIdForMask), // partId
           bn(maskAssetsEquip[0]), // childAssetId
           2, // z
-          maskContract.address, // childAddress
+          mask.address, // childAddress
           bn(masks[0]), // childTokenId
           'ipfs:weapon/equip/5', // childAssetMetadata
           '', // partMetadata
         ],
       ];
-      const allAssets = await viewContract.composeEquippables(
-        neonContract.address,
-        neons[0],
-        neonResIds[0],
-      );
+      const allAssets = await view.composeEquippables(neon.address, neons[0], neonResIds[0]);
       expect(allAssets).to.eql([
         'ipfs:neonRes/1', // metadataURI
         bn(0), // equippableGroupId
-        baseContract.address, // baseAddress,
+        base.address, // baseAddress,
         expectedFixedParts,
         expectedSlotParts,
       ]);
@@ -583,15 +548,11 @@ async function shouldBehaveLikeEquippableWithParts() {
           'ipfs://ears1.png', // metadataURI
         ],
       ];
-      const allAssets = await viewContract.composeEquippables(
-        maskContract.address,
-        masks[0],
-        maskAssetsEquip[0],
-      );
+      const allAssets = await view.composeEquippables(mask.address, masks[0], maskAssetsEquip[0]);
       expect(allAssets).to.eql([
         `ipfs:weapon/equip/${maskAssetsEquip[0]}`, // metadataURI
         bn(maskpableGroupId), // equippableGroupId
-        baseContract.address, // baseAddress
+        base.address, // baseAddress
         expectedFixedParts,
         [],
       ]);
@@ -600,30 +561,28 @@ async function shouldBehaveLikeEquippableWithParts() {
     it('cannot compose equippables for neon with not associated asset', async function () {
       const wrongResId = maskAssetsEquip[1];
       await expect(
-        viewContract.composeEquippables(maskContract.address, masks[0], wrongResId),
-      ).to.be.revertedWithCustomError(maskContract, 'TokenDoesNotHaveAsset');
+        view.composeEquippables(mask.address, masks[0], wrongResId),
+      ).to.be.revertedWithCustomError(mask, 'TokenDoesNotHaveAsset');
     });
 
     it('cannot compose equippables for mask for asset with no base', async function () {
       const noBaseAssetId = 99;
-      await maskContract.addEquippableAssetEntry(
+      await mask.addEquippableAssetEntry(
         noBaseAssetId,
         0, // Not meant to equip
         ethers.constants.AddressZero, // Not meant to equip
         `ipfs:weapon/full/customAsset.png`,
         [],
       );
-      await maskContract.addAssetToToken(masks[0], noBaseAssetId, 0);
-      await maskContract.connect(addrs[0]).acceptAsset(masks[0], 0, noBaseAssetId);
+      await mask.addAssetToToken(masks[0], noBaseAssetId, 0);
+      await mask.connect(addrs[0]).acceptAsset(masks[0], 0, noBaseAssetId);
       await expect(
-        viewContract.composeEquippables(maskContract.address, masks[0], noBaseAssetId),
-      ).to.be.revertedWithCustomError(viewContract, 'NotComposableAsset');
+        view.composeEquippables(mask.address, masks[0], noBaseAssetId),
+      ).to.be.revertedWithCustomError(view, 'NotComposableAsset');
     });
   });
-}
+});
 
 function bn(x: number): BigNumber {
   return BigNumber.from(x);
 }
-
-export default shouldBehaveLikeEquippableWithParts;

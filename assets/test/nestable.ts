@@ -1,9 +1,9 @@
-import { expect } from 'chai';
-import { ethers } from 'hardhat';
 import { BigNumber, constants } from 'ethers';
-import { EquippableTokenMock } from '../typechain-types';
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import { EquippableTokenMock } from '../typechain-types';
 
 function bn(x: number): BigNumber {
   return BigNumber.from(x);
