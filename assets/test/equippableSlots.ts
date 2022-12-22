@@ -1,9 +1,9 @@
-import { ethers } from 'hardhat';
-import { expect } from 'chai';
-import { BigNumber } from 'ethers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { BaseStorageMock, EquippableTokenMock, EquipRenderUtils } from '../../typechain-types';
+import { expect } from 'chai';
+import { BigNumber } from 'ethers';
+import { ethers } from 'hardhat';
+import { BaseStorageMock, EquippableTokenMock, EquipRenderUtils } from '../typechain-types';
 
 const partIdForBody = 1;
 const partIdForWeapon = 2;
