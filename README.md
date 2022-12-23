@@ -140,7 +140,7 @@ interface IEquippable is IERC5773 {
      *  equippable into a given slot and parent
      * @param equippableGroupId ID of the equippable group being marked as equippable into the slot associated with
      *  `slotPartId` of the `parentAddress` collection
-     * @param slotPartId ID of the slot part of the base into which the parts belonging to the equippable group
+     * @param slotPartId ID of the slot part of the catalog into which the parts belonging to the equippable group
      *  associated with `equippableGroupId` can be equipped
      * @param parentAddress Address of the collection into which the parts belonging to `equippableGroupId` can be
      *  equipped
@@ -191,13 +191,13 @@ interface IEquippable is IERC5773 {
      *      childEquippableAddress
      *  ]
      * @param tokenId ID of the token for which we are retrieving the equipped object
-     * @param targetBaseAddress Address of the `Base` associated with the `Slot` part of the token
+     * @param targetCatalogAddress Address of the `Catalog` associated with the `Slot` part of the token
      * @param slotPartId ID of the `Slot` part that we are checking for equipped objects
      * @return struct The `Equipment` struct containing data about the equipped object
      */
     function getEquipment(
         uint256 tokenId,
-        address targetBaseAddress,
+        address targetCatalogAddress,
         uint64 slotPartId
     ) external view returns (Equipment memory);
 
@@ -207,7 +207,7 @@ interface IEquippable is IERC5773 {
      * @param assetId ID of the asset of which we are retrieving
      * @return metadataURI The metadata URI of the asset
      * @return equippableGroupId ID of the equippable group this asset belongs to
-     * @return baseAddress The address of the base the part belongs to
+     * @return catalogAddress The address of the catalog the part belongs to
      * @return partIds An array of IDs of parts included in the asset
      */
     function getAssetAndEquippableData(uint256 tokenId, uint64 assetId)
@@ -216,7 +216,7 @@ interface IEquippable is IERC5773 {
         returns (
             string memory metadataURI,
             uint64 equippableGroupId,
-            address baseAddress,
+            address catalogAddress,
             uint64[] calldata partIds
         );
 }
@@ -268,7 +268,8 @@ interface ICatalog is IERC165 {
 
     /**
      * @notice Event to announce the overriding of equippable addresses of the part.
-     * @dev It is emitted when the existing list of addresses marked as equippable for `partId` is overwritten by a new one.
+     * @dev It is emitted when the existing list of addresses marked as equippable for `partId` is overwritten by a new
+     *  one.
      * @param partId ID of the part whose list of equippable addresses was overwritten
      * @param equippableAddresses The new, full, list of addresses that can equip this part
      */
@@ -292,8 +293,8 @@ interface ICatalog is IERC165 {
     }
 
     /**
-     * @notice The integral structure of a standard RMRK base item defining it.
-     * @dev Requires a minimum of 3 storage slots per base item, equivalent to roughly 60,000 gas as of Berlin hard fork
+     * @notice The integral structure of a standard RMRK catalog item defining it.
+     * @dev Requires a minimum of 3 storage slots per catalog item, equivalent to roughly 60,000 gas as of Berlin hard fork
      *  (April 14, 2021), though 5-7 storage slots is more realistic, given the standard length of an IPFS URI. This
      *  will result in between 25,000,000 and 35,000,000 gas per 250 assets--the maximum block size of Ethereum
      *  mainnet is 30M at peak usage.
@@ -336,14 +337,14 @@ interface ICatalog is IERC165 {
     }
 
     /**
-     * @notice Used to return the metadata URI of the associated base.
+     * @notice Used to return the metadata URI of the associated catalog.
      * @return string Base metadata URI
      */
     function getMetadataURI() external view returns (string memory);
 
     /**
-     * @notice Used to return the `itemType` of the associated base
-     * @return string `itemType` of the associated base
+     * @notice Used to return the `itemType` of the associated catalog
+     * @return string `itemType` of the associated catalog
      */
     function getType() external view returns (string memory);
 
