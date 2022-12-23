@@ -2,11 +2,11 @@
 
 pragma solidity ^0.8.16;
 
-import "../BaseStorage.sol";
+import "../Catalog.sol";
 
-contract BaseStorageMock is BaseStorage {
+contract CatalogMock is Catalog {
     constructor(string memory metadataURI, string memory type_)
-        BaseStorage(metadataURI, type_)
+        Catalog(metadataURI, type_)
     {}
 
     function addPart(IntakeStruct calldata intakeStruct) external {

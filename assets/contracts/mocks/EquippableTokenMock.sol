@@ -73,14 +73,14 @@ contract EquippableTokenMock is EquippableToken {
     function addEquippableAssetEntry(
         uint64 id,
         uint64 equippableGroupId,
-        address baseAddress,
+        address catalogAddress,
         string memory metadataURI,
         uint64[] calldata partIds
     ) external onlyIssuer {
         _addAssetEntry(
             id,
             equippableGroupId,
-            baseAddress,
+            catalogAddress,
             metadataURI,
             partIds
         );

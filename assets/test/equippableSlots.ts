@@ -3,7 +3,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
-import { BaseStorageMock, EquippableTokenMock, EquipRenderUtils } from '../typechain-types';
+import { CatalogMock, EquippableTokenMock, EquipRenderUtils } from '../typechain-types';
 
 const partIdForBody = 1;
 const partIdForWeapon = 2;
@@ -53,7 +53,7 @@ async function nestMint(token: EquippableTokenMock, to: string, parentId: number
 }
 
 async function setupContextForSlots(
-  base: BaseStorageMock,
+  catalog: CatalogMock,
   soldier: EquippableTokenMock,
   weapon: EquippableTokenMock,
   weaponGem: EquippableTokenMock,
@@ -61,7 +61,7 @@ async function setupContextForSlots(
 ) {
   [, ...addrs] = await ethers.getSigners();
 
-  await setupBase();
+  await setupCatalog();
 
   await mintSnakeSoldiers();
   await mintWeapons();
@@ -74,13 +74,13 @@ async function setupContextForSlots(
   await addAssetsToBackground();
 
   return {
-    base,
+    catalog,
     soldier,
     weapon,
     background,
   };
 
-  async function setupBase(): Promise<void> {
+  async function setupCatalog(): Promise<void> {
     const partForBody = {
       itemType: ItemType.Fixed,
       z: 1,
@@ -106,7 +106,7 @@ async function setupContextForSlots(
       metadataURI: 'noBackground.png',
     };
 
-    await base.addPartList([
+    await catalog.addPartList([
       { partId: partIdForBody, part: partForBody },
       { partId: partIdForWeapon, part: partForWeapon },
       { partId: partIdForWeaponGem, part: partForWeaponGem },
@@ -162,7 +162,7 @@ async function setupContextForSlots(
   }
 
   async function addAssetsToSoldier(): Promise<void> {
-    await soldier.addEquippableAssetEntry(soldierResId, 0, base.address, 'ipfs:soldier/', [
+    await soldier.addEquippableAssetEntry(soldierResId, 0, catalog.address, 'ipfs:soldier/', [
       partIdForBody,
       partIdForWeapon,
       partIdForBackground,
@@ -189,7 +189,7 @@ async function setupContextForSlots(
       await weapon.addEquippableAssetEntry(
         weaponAssetsEquip[i],
         equippableGroupId,
-        base.address,
+        catalog.address,
         `ipfs:weapon/equip/${weaponAssetsEquip[i]}`,
         [partIdForWeaponGem],
       );
@@ -228,7 +228,7 @@ async function setupContextForSlots(
     await weaponGem.addEquippableAssetEntry(
       weaponGemAssetEquip,
       equippableGroupId,
-      base.address,
+      catalog.address,
       'ipfs:weagponGem/equip/',
       [],
     );
@@ -252,7 +252,7 @@ async function setupContextForSlots(
     await background.addEquippableAssetEntry(
       backgroundAssetId,
       equippableGroupId,
-      base.address,
+      catalog.address,
       'ipfs:background/',
       [],
     );
@@ -271,10 +271,10 @@ async function setupContextForSlots(
 }
 
 async function slotsFixture() {
-  const baseSymbol = 'SSB';
-  const baseType = 'mixed';
+  const catalogSymbol = 'SSB';
+  const catalogType = 'mixed';
 
-  const baseFactory = await ethers.getContractFactory('BaseStorageMock');
+  const catalogFactory = await ethers.getContractFactory('CatalogMock');
   const equipFactory = await ethers.getContractFactory('EquippableTokenMock');
   const viewFactory = await ethers.getContractFactory('EquipRenderUtils');
 
@@ -282,9 +282,9 @@ async function slotsFixture() {
   const view = <EquipRenderUtils>await viewFactory.deploy();
   await view.deployed();
 
-  // Base
-  const base = <BaseStorageMock>await baseFactory.deploy(baseSymbol, baseType);
-  await base.deployed();
+  // Catalog
+  const catalog = <CatalogMock>await catalogFactory.deploy(catalogSymbol, catalogType);
+  await catalog.deployed();
 
   // Soldier token
   const soldier = <EquippableTokenMock>await equipFactory.deploy();
@@ -302,20 +302,20 @@ async function slotsFixture() {
   const background = <EquippableTokenMock>await equipFactory.deploy();
   await background.deployed();
 
-  await setupContextForSlots(base, soldier, weapon, weaponGem, background);
+  await setupContextForSlots(catalog, soldier, weapon, weaponGem, background);
 
-  return { base, soldier, weapon, weaponGem, background, view };
+  return { catalog, soldier, weapon, weaponGem, background, view };
 }
 
 // The general idea is having these tokens: Soldier, Weapon, WeaponGem and Background.
 // Weapon and Background can be equipped into Soldier. WeaponGem can be equipped into Weapon
-// All use a single base.
+// All use a single catalog.
 // Soldier will use a single enumerated fixed asset for simplicity
 // Weapon will have 2 assets per weapon, one for full view, one for equipping
 // Background will have a single asset for each, it can be used as full view and to equip
 // Weapon Gems will have 2 enumerated assets, one for full view, one for equipping.
 describe('EquippableTokenMock with Slots', async () => {
-  let base: BaseStorageMock;
+  let catalog: CatalogMock;
   let soldier: EquippableTokenMock;
   let weapon: EquippableTokenMock;
   let weaponGem: EquippableTokenMock;
@@ -326,7 +326,7 @@ describe('EquippableTokenMock with Slots', async () => {
 
   beforeEach(async function () {
     [, ...addrs] = await ethers.getSigners();
-    ({ base, soldier, weapon, weaponGem, background, view } = await loadFixture(slotsFixture));
+    ({ catalog, soldier, weapon, weaponGem, background, view } = await loadFixture(slotsFixture));
   });
 
   describe('Validations', async function () {
@@ -625,18 +625,18 @@ describe('EquippableTokenMock with Slots', async () => {
       ).to.be.revertedWithCustomError(soldier, 'SlotAlreadyUsed');
     });
 
-    it('cannot equip if not intented on base', async function () {
+    it('cannot equip if not intented on catalog', async function () {
       // Weapon is child on index 0, background on index 1
       const childIndex = 0;
       const weaponResId = weaponAssetsEquip[0]; // This asset is assigned to weapon first weapon
 
       // Remove equippable addresses for part.
-      await base.resetEquippableAddresses(partIdForWeapon);
+      await catalog.resetEquippableAddresses(partIdForWeapon);
       await expect(
         soldier
           .connect(addrs[0]) // Owner is addrs[0]
           .equip([snakeSoldiersIds[0], childIndex, soldierResId, partIdForWeapon, weaponResId]),
-      ).to.be.revertedWithCustomError(soldier, 'EquippableEquipNotAllowedByBase');
+      ).to.be.revertedWithCustomError(soldier, 'EquippableEquipNotAllowedByCatalog');
     });
   });
 
@@ -800,7 +800,7 @@ describe('EquippableTokenMock with Slots', async () => {
       expect(allAssets).to.eql([
         'ipfs:soldier/', // metadataURI
         bn(0), // equippableGroupId
-        base.address, // baseAddress
+        catalog.address, // catalogAddress
         expectedFixedParts,
         expectedSlotParts,
       ]);
@@ -815,7 +815,7 @@ describe('EquippableTokenMock with Slots', async () => {
       expect(allAssets).to.eql([
         'ipfs:background/', // metadataURI
         bn(1), // equippableGroupId
-        base.address, // baseAddress,
+        catalog.address, // catalogAddress,
         [],
         [],
       ]);

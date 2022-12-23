@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.16;
 
-import "./IBaseStorage.sol";
+import "./ICatalog.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
 error BadConfig();
@@ -13,15 +13,15 @@ error PartIsNotSlot();
 error ZeroLengthIdsPassed();
 
 /**
- * @title BaseStorage
+ * @title Catalog
  * @author RMRK team
- * @notice Base storage contract for RMRK equippable module.
+ * @notice Catalog contract for RMRK equippable module.
  */
-contract BaseStorage is IBaseStorage {
+contract Catalog is ICatalog {
     using Address for address;
 
     /**
-     * @notice Mapping of uint64 `partId` to BaseStorage `Part` struct
+     * @notice Mapping of uint64 `partId` to Catalog `Part` struct
      */
     mapping(uint64 => Part) private _parts;
 
@@ -36,9 +36,9 @@ contract BaseStorage is IBaseStorage {
     string private _type;
 
     /**
-     * @notice Used to initialize the base storage.
-     * @param metadataURI Base metadata URI of the base
-     * @param type_ Type of base
+     * @notice Used to initialize the catalog.
+     * @param metadataURI Base metadata URI of the catalog
+     * @param type_ Type of catalog
      */
     constructor(string memory metadataURI, string memory type_) {
         _metadataURI = metadataURI;
@@ -73,18 +73,18 @@ contract BaseStorage is IBaseStorage {
     {
         return
             interfaceId == type(IERC165).interfaceId ||
-            interfaceId == type(IBaseStorage).interfaceId;
+            interfaceId == type(ICatalog).interfaceId;
     }
 
     /**
-     * @inheritdoc IBaseStorage
+     * @inheritdoc ICatalog
      */
     function getMetadataURI() external view returns (string memory) {
         return _metadataURI;
     }
 
     /**
-     * @inheritdoc IBaseStorage
+     * @inheritdoc ICatalog
      */
     function getType() external view returns (string memory) {
         return _type;
@@ -134,7 +134,7 @@ contract BaseStorage is IBaseStorage {
     }
 
     /**
-     * @notice Internal function used to add multiple `equippableAddresses` to a single base entry.
+     * @notice Internal function used to add multiple `equippableAddresses` to a single catalog entry.
      * @dev Can only be called on `Part`s of `Slot` type.
      * @param partId ID of the `Part` that we are adding the equippable addresses to
      * @param equippableAddresses An array of addresses that can be equipped into the `Part` associated with the `partId`
@@ -202,14 +202,14 @@ contract BaseStorage is IBaseStorage {
     }
 
     /**
-     * @inheritdoc IBaseStorage
+     * @inheritdoc ICatalog
      */
     function checkIsEquippableToAll(uint64 partId) public view returns (bool) {
         return _isEquippableToAll[partId];
     }
 
     /**
-     * @inheritdoc IBaseStorage
+     * @inheritdoc ICatalog
      */
     function checkIsEquippable(uint64 partId, address targetAddress)
         public
@@ -237,14 +237,14 @@ contract BaseStorage is IBaseStorage {
     }
 
     /**
-     * @inheritdoc IBaseStorage
+     * @inheritdoc ICatalog
      */
     function getPart(uint64 partId) public view returns (Part memory) {
         return (_parts[partId]);
     }
 
     /**
-     * @inheritdoc IBaseStorage
+     * @inheritdoc ICatalog
      */
     function getParts(uint64[] calldata partIds)
         public

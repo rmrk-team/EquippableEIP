@@ -4,9 +4,9 @@
 
 pragma solidity ^0.8.16;
 
-import "./IBaseStorage.sol";
+import "./ICatalog.sol";
 import "./IEquippable.sol";
-import "./INestable.sol";
+import "./IERC6059.sol";
 import "./library/EquippableLib.sol";
 import "./security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -19,10 +19,10 @@ error ApprovalForAssetsToCurrentOwner();
 error ApproveForAssetsCallerIsNotOwnerNorApprovedForAll();
 error AssetAlreadyExists();
 error BadPriorityListLength();
-error BaseRequiredForParts();
+error CatalogRequiredForParts();
 error ChildAlreadyExists();
 error ChildIndexOutOfRange();
-error EquippableEquipNotAllowedByBase();
+error EquippableEquipNotAllowedByCatalog();
 error ERC721AddressZeroIsNotaValidOwner();
 error ERC721ApprovalToCurrentOwner();
 error ERC721ApproveCallerIsNotOwnerNorApprovedForAll();
@@ -70,7 +70,7 @@ contract EquippableToken is
     ReentrancyGuard,
     IERC165,
     IERC721,
-    INestable,
+    IERC6059,
     IEquippable
 {
     using Address for address;
@@ -143,14 +143,14 @@ contract EquippableToken is
 
     // ------------------- EQUIPPABLE --------------
 
-    /// Mapping of uint64 asset ID to corresponding base address.
-    mapping(uint64 => address) private _baseAddresses;
+    /// Mapping of uint64 asset ID to corresponding catalog address.
+    mapping(uint64 => address) private _catalogAddresses;
     /// Mapping of uint64 ID to asset object.
     mapping(uint64 => uint64) private _equippableGroupIds;
-    /// Mapping of assetId to base parts applicable to this asset, both fixed and slot
+    /// Mapping of assetId to catalog parts applicable to this asset, both fixed and slot
     mapping(uint64 => uint64[]) private _partIds;
 
-    /// Mapping of token ID to base address to slot part ID to equipment information. Used to compose an NFT.
+    /// Mapping of token ID to catalog address to slot part ID to equipment information. Used to compose an NFT.
     mapping(uint256 => mapping(address => mapping(uint64 => Equipment)))
         private _equipments;
 
@@ -204,12 +204,12 @@ contract EquippableToken is
      */
     function ownerOf(
         uint256 tokenId
-    ) public view virtual override(INestable, IERC721) returns (address) {
+    ) public view virtual override(IERC6059, IERC721) returns (address) {
         (address owner, uint256 ownerTokenId, bool isNft) = directOwnerOf(
             tokenId
         );
         if (isNft) {
-            owner = INestable(owner).ownerOf(ownerTokenId);
+            owner = IERC6059(owner).ownerOf(ownerTokenId);
         }
         return owner;
     }
@@ -223,8 +223,8 @@ contract EquippableToken is
         return
             interfaceId == type(IERC165).interfaceId ||
             interfaceId == type(IERC721).interfaceId ||
-            interfaceId == type(IMultiAsset).interfaceId ||
-            interfaceId == type(INestable).interfaceId ||
+            interfaceId == type(IERC5773).interfaceId ||
+            interfaceId == type(IERC6059).interfaceId ||
             interfaceId == type(IEquippable).interfaceId;
     }
 
@@ -511,7 +511,7 @@ contract EquippableToken is
     ) internal virtual {
         // It seems redundant, but otherwise it would revert with no error
         if (!to.isContract()) revert IsNotContract();
-        if (!IERC165(to).supportsInterface(type(INestable).interfaceId))
+        if (!IERC165(to).supportsInterface(type(IERC6059).interfaceId))
             revert MintToNonNestableImplementer();
 
         _innerMint(to, tokenId, destinationId);
@@ -608,7 +608,7 @@ contract EquippableToken is
             // We substract one to the next level to count for the token being burned, then add it again on returns
             // This is to allow the behavior of 0 recursive burns meaning only the current token is deleted.
             totalChildBurns +=
-                INestable(children[i].contractAddress).burn(
+                IERC6059(children[i].contractAddress).burn(
                     children[i].tokenId,
                     pendingRecursiveBurns - 1
                 ) +
@@ -1017,7 +1017,7 @@ contract EquippableToken is
                 );
             } else {
                 // Destination is an NFT
-                INestable(child.contractAddress).nestTransferFrom(
+                IERC6059(child.contractAddress).nestTransferFrom(
                     address(this),
                     to,
                     child.tokenId,
@@ -1164,7 +1164,7 @@ contract EquippableToken is
         // Destination contract checks:
         // It seems redundant, but otherwise it would revert with no error
         if (!to.isContract()) revert IsNotContract();
-        if (!IERC165(to).supportsInterface(type(INestable).interfaceId))
+        if (!IERC165(to).supportsInterface(type(IERC6059).interfaceId))
             revert NestableTransferToNonNestableImplementer();
         _checkForInheritanceLoop(tokenId, to, destinationId);
 
@@ -1204,7 +1204,7 @@ contract EquippableToken is
         uint256 tokenId,
         bytes memory data
     ) private {
-        INestable destContract = INestable(to);
+        IERC6059 destContract = IERC6059(to);
         destContract.addChild(destinationId, tokenId, data);
         _afterTokenTransfer(from, to, tokenId);
         _afterNestedTokenTransfer(from, to, parentId, destinationId, tokenId);
@@ -1232,7 +1232,7 @@ contract EquippableToken is
                 address nextOwner,
                 uint256 nextOwnerTokenId,
                 bool isNft
-            ) = INestable(targetContract).directOwnerOf(targetId);
+            ) = IERC6059(targetContract).directOwnerOf(targetId);
             // If there's a final address, we're good. There's no loop.
             if (!isNft) {
                 return;
@@ -1267,7 +1267,7 @@ contract EquippableToken is
     }
 
     /**
-     * @inheritdoc IMultiAsset
+     * @inheritdoc IERC5773
      */
     function getAssetMetadata(
         uint256 tokenId,
@@ -1278,7 +1278,7 @@ contract EquippableToken is
     }
 
     /**
-     * @inheritdoc IMultiAsset
+     * @inheritdoc IERC5773
      */
     function getActiveAssets(
         uint256 tokenId
@@ -1287,7 +1287,7 @@ contract EquippableToken is
     }
 
     /**
-     * @inheritdoc IMultiAsset
+     * @inheritdoc IERC5773
      */
     function getPendingAssets(
         uint256 tokenId
@@ -1296,7 +1296,7 @@ contract EquippableToken is
     }
 
     /**
-     * @inheritdoc IMultiAsset
+     * @inheritdoc IERC5773
      */
     function getActiveAssetPriorities(
         uint256 tokenId
@@ -1305,7 +1305,7 @@ contract EquippableToken is
     }
 
     /**
-     * @inheritdoc IMultiAsset
+     * @inheritdoc IERC5773
      */
     function getAssetReplacements(
         uint256 tokenId,
@@ -1315,7 +1315,7 @@ contract EquippableToken is
     }
 
     /**
-     * @inheritdoc IMultiAsset
+     * @inheritdoc IERC5773
      */
     function isApprovedForAllForAssets(
         address owner,
@@ -1344,7 +1344,7 @@ contract EquippableToken is
     }
 
     /**
-     * @inheritdoc IMultiAsset
+     * @inheritdoc IERC5773
      */
     function setApprovalForAllForAssets(
         address operator,
@@ -1457,23 +1457,23 @@ contract EquippableToken is
      * @param id ID of the asset being added
      * @param equippableGroupId ID of the equippable group being marked as equippable into the slot associated with
      *  `Parts` of the `Slot` type
-     * @param baseAddress Address of the `Base` associated with the asset
+     * @param catalogAddress Address of the `Catalog` associated with the asset
      * @param metadataURI The metadata URI of the asset
      * @param partIds An array of IDs of fixed and slot parts to be included in the asset
      */
     function _addAssetEntry(
         uint64 id,
         uint64 equippableGroupId,
-        address baseAddress,
+        address catalogAddress,
         string memory metadataURI,
         uint64[] calldata partIds
     ) internal virtual {
         _addAssetEntry(id, metadataURI);
 
-        if (baseAddress == address(0) && partIds.length != 0)
-            revert BaseRequiredForParts();
+        if (catalogAddress == address(0) && partIds.length != 0)
+            revert CatalogRequiredForParts();
 
-        _baseAddresses[id] = baseAddress;
+        _catalogAddresses[id] = catalogAddress;
         _equippableGroupIds[id] = equippableGroupId;
         _partIds[id] = partIds;
     }
@@ -1730,7 +1730,7 @@ contract EquippableToken is
         return (
             getAssetMetadata(tokenId, assetId),
             _equippableGroupIds[assetId],
-            _baseAddresses[assetId],
+            _catalogAddresses[assetId],
             _partIds[assetId]
         );
     }
@@ -1740,10 +1740,10 @@ contract EquippableToken is
      */
     function getEquipment(
         uint256 tokenId,
-        address targetBaseAddress,
+        address targetCatalogAddress,
         uint64 slotPartId
     ) public view virtual returns (Equipment memory) {
-        return _equipments[tokenId][targetBaseAddress][slotPartId];
+        return _equipments[tokenId][targetCatalogAddress][slotPartId];
     }
 
     // --------------------- EQUIPPABLE SETTERS ---------------------
@@ -1788,7 +1788,7 @@ contract EquippableToken is
      * @notice Private function used to equip a child into a token.
      * @dev If the `Slot` already has an item equipped, the execution will be reverted.
      * @dev If the child can't be used in the given `Slot`, the execution will be reverted.
-     * @dev If the base doesn't allow this equip to happen, the execution will be reverted.
+     * @dev If the catalog doesn't allow this equip to happen, the execution will be reverted.
      * @dev The `IntakeEquip` stuct contains the following data:
      *  [
      *      tokenId,
@@ -1800,10 +1800,10 @@ contract EquippableToken is
      * @param data An `IntakeEquip` struct specifying the equip data
      */
     function _equip(IntakeEquip memory data) internal virtual {
-        address baseAddress = _baseAddresses[data.assetId];
+        address catalogAddress = _catalogAddresses[data.assetId];
         uint64 slotPartId = data.slotPartId;
         if (
-            _equipments[data.tokenId][baseAddress][slotPartId]
+            _equipments[data.tokenId][catalogAddress][slotPartId]
                 .childEquippableAddress != address(0)
         ) revert SlotAlreadyUsed();
 
@@ -1811,7 +1811,7 @@ contract EquippableToken is
         (, bool found) = _partIds[data.assetId].indexOf(slotPartId);
         if (!found) revert TargetAssetCannotReceiveSlot();
 
-        INestable.Child memory child = childOf(data.tokenId, data.childIndex);
+        IERC6059.Child memory child = childOf(data.tokenId, data.childIndex);
 
         // Check from child perspective intention to be used in part
         // We add reentrancy guard because of this call, it happens before updating state
@@ -1825,13 +1825,13 @@ contract EquippableToken is
                 )
         ) revert TokenCannotBeEquippedWithAssetIntoSlot();
 
-        // Check from base perspective
+        // Check from catalog perspective
         if (
-            !IBaseStorage(baseAddress).checkIsEquippable(
+            !ICatalog(catalogAddress).checkIsEquippable(
                 slotPartId,
                 child.contractAddress
             )
-        ) revert EquippableEquipNotAllowedByBase();
+        ) revert EquippableEquipNotAllowedByCatalog();
 
         _beforeEquip(data);
         Equipment memory newEquip = Equipment({
@@ -1841,7 +1841,7 @@ contract EquippableToken is
             childEquippableAddress: child.contractAddress
         });
 
-        _equipments[data.tokenId][baseAddress][slotPartId] = newEquip;
+        _equipments[data.tokenId][catalogAddress][slotPartId] = newEquip;
         _equipCountPerChild[data.tokenId][child.contractAddress][
             child.tokenId
         ] += 1;
@@ -1868,15 +1868,15 @@ contract EquippableToken is
         uint64 assetId,
         uint64 slotPartId
     ) internal virtual {
-        address targetBaseAddress = _baseAddresses[assetId];
-        Equipment memory equipment = _equipments[tokenId][targetBaseAddress][
+        address targetCatalogAddress = _catalogAddresses[assetId];
+        Equipment memory equipment = _equipments[tokenId][targetCatalogAddress][
             slotPartId
         ];
         if (equipment.childEquippableAddress == address(0))
             revert NotEquipped();
         _beforeUnequip(tokenId, assetId, slotPartId);
 
-        delete _equipments[tokenId][targetBaseAddress][slotPartId];
+        delete _equipments[tokenId][targetCatalogAddress][slotPartId];
         _equipCountPerChild[tokenId][equipment.childEquippableAddress][
             equipment.childId
         ] -= 1;
