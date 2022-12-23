@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.16;
 
-import "../IBaseStorage.sol";
+import "../ICatalog.sol";
 import "../IEquippable.sol";
 import "../library/EquippableLib.sol";
 
@@ -23,7 +23,7 @@ contract EquipRenderUtils {
      * @return id ID of the asset
      * @return equppableGroupId ID of the equippable group this asset belongs to
      * @return priority Priority of the asset in the active assets array it belongs to
-     * @return baseAddress Address of the `Base` smart contract this asset belongs to
+     * @return catalogAddress Address of the `Catalog` smart contract this asset belongs to
      * @return metadata Metadata URI of the asset
      * @return partIds[] An array of IDs of fixed and slot parts present in the asset
      */
@@ -31,7 +31,7 @@ contract EquipRenderUtils {
         uint64 id;
         uint64 equippableGroupId;
         uint16 priority;
-        address baseAddress;
+        address catalogAddress;
         string metadata;
         uint64[] partIds;
     }
@@ -42,7 +42,7 @@ contract EquipRenderUtils {
      * @return equppableGroupId ID of the equippable group this asset belongs to
      * @return acceptRejectIndex The index of the given asset in the pending assets array it belongs to
      * @return replacesAssetWithId ID of the asset the given asset will replace if accepted
-     * @return baseAddress Address of the `Base` smart contract this asset belongs to
+     * @return catalogAddress Address of the `Catalog` smart contract this asset belongs to
      * @return metadata Metadata URI of the asset
      * @return partIds[] An array of IDs of fixed and slot parts present in the asset
      */
@@ -51,7 +51,7 @@ contract EquipRenderUtils {
         uint64 equippableGroupId;
         uint128 acceptRejectIndex;
         uint64 replacesAssetWithId;
-        address baseAddress;
+        address catalogAddress;
         string metadata;
         uint64[] partIds;
     }
@@ -95,7 +95,7 @@ contract EquipRenderUtils {
      *      ID,
      *      equippableGroupId,
      *      priority,
-     *      baseAddress,
+     *      catalogAddress,
      *      metadata,
      *      [
      *          fixedPartId0,
@@ -133,14 +133,14 @@ contract EquipRenderUtils {
             (
                 string memory metadataURI,
                 uint64 equippableGroupId,
-                address baseAddress,
+                address catalogAddress,
                 uint64[] memory partIds
             ) = target_.getAssetAndEquippableData(tokenId, assets[i]);
             activeAssets[i] = ExtendedActiveAsset({
                 id: assets[i],
                 equippableGroupId: equippableGroupId,
                 priority: priorities[i],
-                baseAddress: baseAddress,
+                catalogAddress: catalogAddress,
                 metadata: metadataURI,
                 partIds: partIds
             });
@@ -159,7 +159,7 @@ contract EquipRenderUtils {
      *      equippableGroupId,
      *      acceptRejectIndex,
      *      replacesAssetWithId,
-     *      baseAddress,
+     *      catalogAddress,
      *      metadata,
      *      [
      *          fixedPartId0,
@@ -195,7 +195,7 @@ contract EquipRenderUtils {
             (
                 string memory metadataURI,
                 uint64 equippableGroupId,
-                address baseAddress,
+                address catalogAddress,
                 uint64[] memory partIds
             ) = target_.getAssetAndEquippableData(tokenId, assets[i]);
             replacesAssetWithId = target_.getAssetReplacements(
@@ -207,7 +207,7 @@ contract EquipRenderUtils {
                 equippableGroupId: equippableGroupId,
                 acceptRejectIndex: uint128(i),
                 replacesAssetWithId: replacesAssetWithId,
-                baseAddress: baseAddress,
+                catalogAddress: catalogAddress,
                 metadata: metadataURI,
                 partIds: partIds
             });
@@ -248,17 +248,17 @@ contract EquipRenderUtils {
     {
         IEquippable target_ = IEquippable(target);
 
-        (, , address baseAddress, uint64[] memory partIds) = target_
+        (, , address catalogAddress, uint64[] memory partIds) = target_
             .getAssetAndEquippableData(tokenId, assetId);
 
-        (slotPartIds, ) = splitSlotAndFixedParts(partIds, baseAddress);
+        (slotPartIds, ) = splitSlotAndFixedParts(partIds, catalogAddress);
         childrenEquipped = new IEquippable.Equipment[](slotPartIds.length);
 
         uint256 len = slotPartIds.length;
         for (uint256 i; i < len; ) {
             IEquippable.Equipment memory equipment = target_.getEquipment(
                 tokenId,
-                baseAddress,
+                catalogAddress,
                 slotPartIds[i]
             );
             if (equipment.assetId == assetId) {
@@ -293,7 +293,7 @@ contract EquipRenderUtils {
      * @param assetId ID of the asset being queried for equipped parts
      * @return metadataURI Metadata URI of the asset
      * @return equippableGroupId Equippable group ID of the asset
-     * @return baseAddress Address of the base to which the asset belongs to
+     * @return catalogAddress Address of the catalog to which the asset belongs to
      * @return fixedParts An array of fixed parts respresented by the `FixedPart` structs present on the asset
      * @return slotParts An array of slot parts represented by the `EquippedSlotPart` structs present on the asset
      */
@@ -307,7 +307,7 @@ contract EquipRenderUtils {
         returns (
             string memory metadataURI,
             uint64 equippableGroupId,
-            address baseAddress,
+            address catalogAddress,
             FixedPart[] memory fixedParts,
             EquippedSlotPart[] memory slotParts
         )
@@ -316,28 +316,28 @@ contract EquipRenderUtils {
         uint64[] memory partIds;
 
         // If token does not have uint64[] memory slotPartId to save the asset, it would fail here.
-        (metadataURI, equippableGroupId, baseAddress, partIds) = target_
+        (metadataURI, equippableGroupId, catalogAddress, partIds) = target_
             .getAssetAndEquippableData(tokenId, assetId);
-        if (baseAddress == address(0)) revert NotComposableAsset();
+        if (catalogAddress == address(0)) revert NotComposableAsset();
 
         (
             uint64[] memory slotPartIds,
             uint64[] memory fixedPartIds
-        ) = splitSlotAndFixedParts(partIds, baseAddress);
+        ) = splitSlotAndFixedParts(partIds, catalogAddress);
 
         // Fixed parts:
         fixedParts = new FixedPart[](fixedPartIds.length);
 
         uint256 len = fixedPartIds.length;
         if (len != 0) {
-            IBaseStorage.Part[] memory baseFixedParts = IBaseStorage(
-                baseAddress
+            ICatalog.Part[] memory catalogFixedParts = ICatalog(
+                catalogAddress
             ).getParts(fixedPartIds);
             for (uint256 i; i < len; ) {
                 fixedParts[i] = FixedPart({
                     partId: fixedPartIds[i],
-                    z: baseFixedParts[i].z,
-                    metadataURI: baseFixedParts[i].metadataURI
+                    z: catalogFixedParts[i].z,
+                    metadataURI: catalogFixedParts[i].metadataURI
                 });
                 unchecked {
                     ++i;
@@ -349,7 +349,7 @@ contract EquipRenderUtils {
             target_,
             tokenId,
             assetId,
-            baseAddress,
+            catalogAddress,
             slotPartIds
         );
     }
@@ -369,7 +369,7 @@ contract EquipRenderUtils {
      * @param target_ An address of the `IEquippable` smart contract to retrieve the equipped slot parts from.
      * @param tokenId ID of the token for which to retrieve the equipped slot parts
      * @param assetId ID of the asset on the token to retrieve the equipped slot parts
-     * @param baseAddress The address of the base to which the given asset belongs to
+     * @param catalogAddress The address of the catalog to which the given asset belongs to
      * @param slotPartIds An array of slot part IDs in the asset for which to retrieve the equipped slot parts
      * @return slotParts An array of `EquippedSlotPart` structs representing the equipped slot parts
      */
@@ -377,7 +377,7 @@ contract EquipRenderUtils {
         IEquippable target_,
         uint256 tokenId,
         uint64 assetId,
-        address baseAddress,
+        address catalogAddress,
         uint64[] memory slotPartIds
     ) private view returns (EquippedSlotPart[] memory slotParts) {
         slotParts = new EquippedSlotPart[](slotPartIds.length);
@@ -385,12 +385,12 @@ contract EquipRenderUtils {
 
         if (len != 0) {
             string memory metadata;
-            IBaseStorage.Part[] memory baseSlotParts = IBaseStorage(baseAddress)
+            ICatalog.Part[] memory catalogSlotParts = ICatalog(catalogAddress)
                 .getParts(slotPartIds);
             for (uint256 i; i < len; ) {
                 IEquippable.Equipment memory equipment = target_.getEquipment(
                     tokenId,
-                    baseAddress,
+                    catalogAddress,
                     slotPartIds[i]
                 );
                 if (equipment.assetId == assetId) {
@@ -402,21 +402,21 @@ contract EquipRenderUtils {
                     slotParts[i] = EquippedSlotPart({
                         partId: slotPartIds[i],
                         childAssetId: equipment.childAssetId,
-                        z: baseSlotParts[i].z,
+                        z: catalogSlotParts[i].z,
                         childId: equipment.childId,
                         childAddress: equipment.childEquippableAddress,
                         childAssetMetadata: metadata,
-                        partMetadata: baseSlotParts[i].metadataURI
+                        partMetadata: catalogSlotParts[i].metadataURI
                     });
                 } else {
                     slotParts[i] = EquippedSlotPart({
                         partId: slotPartIds[i],
                         childAssetId: uint64(0),
-                        z: baseSlotParts[i].z,
+                        z: catalogSlotParts[i].z,
                         childId: uint256(0),
                         childAddress: address(0),
                         childAssetMetadata: "",
-                        partMetadata: baseSlotParts[i].metadataURI
+                        partMetadata: catalogSlotParts[i].metadataURI
                     });
                 }
                 unchecked {
@@ -429,19 +429,19 @@ contract EquipRenderUtils {
     /**
      * @notice Used to split slot and fixed parts.
      * @param allPartIds[] An array of `Part` IDs containing both, `Slot` and `Fixed` parts
-     * @param baseAddress An address of the base to which the given `Part`s belong to
+     * @param catalogAddress An address of the catalog to which the given `Part`s belong to
      * @return slotPartIds An array of IDs of the `Slot` parts included in the `allPartIds`
      * @return fixedPartIds An array of IDs of the `Fixed` parts included in the `allPartIds`
      */
     function splitSlotAndFixedParts(
         uint64[] memory allPartIds,
-        address baseAddress
+        address catalogAddress
     )
         public
         view
         returns (uint64[] memory slotPartIds, uint64[] memory fixedPartIds)
     {
-        IBaseStorage.Part[] memory allParts = IBaseStorage(baseAddress)
+        ICatalog.Part[] memory allParts = ICatalog(catalogAddress)
             .getParts(allPartIds);
         uint256 numFixedParts;
         uint256 numSlotParts;
@@ -449,10 +449,10 @@ contract EquipRenderUtils {
         uint256 numParts = allPartIds.length;
         // This for loop is just to discover the right size of the split arrays, since we can't create them dynamically
         for (uint256 i; i < numParts; ) {
-            if (allParts[i].itemType == IBaseStorage.ItemType.Fixed)
+            if (allParts[i].itemType == ICatalog.ItemType.Fixed)
                 numFixedParts += 1;
                 // We could just take the numParts - numFixedParts, but it doesn't hurt to double check it's not an uninitialized part:
-            else if (allParts[i].itemType == IBaseStorage.ItemType.Slot)
+            else if (allParts[i].itemType == ICatalog.ItemType.Slot)
                 numSlotParts += 1;
             unchecked {
                 ++i;
@@ -466,10 +466,10 @@ contract EquipRenderUtils {
 
         // This for loop is to actually fill the split arrays
         for (uint256 i; i < numParts; ) {
-            if (allParts[i].itemType == IBaseStorage.ItemType.Fixed) {
+            if (allParts[i].itemType == ICatalog.ItemType.Fixed) {
                 fixedPartIds[fixedPartsIndex] = allPartIds[i];
                 fixedPartsIndex += 1;
-            } else if (allParts[i].itemType == IBaseStorage.ItemType.Slot) {
+            } else if (allParts[i].itemType == ICatalog.ItemType.Slot) {
                 slotPartIds[slotPartsIndex] = allPartIds[i];
                 slotPartsIndex += 1;
             }

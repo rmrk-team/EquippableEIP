@@ -28,7 +28,7 @@ async function assetsFixture() {
 
 describe('Render Utils', async function () {
   let owner: SignerWithAddress;
-  let someBase: SignerWithAddress;
+  let someCatalog: SignerWithAddress;
   let equip: EquippableTokenMock;
   let renderUtils: MultiAssetRenderUtils;
   let renderUtilsEquip: EquipRenderUtils;
@@ -44,7 +44,7 @@ describe('Render Utils', async function () {
 
     const signers = await ethers.getSigners();
     owner = signers[0];
-    someBase = signers[1];
+    someCatalog = signers[1];
     tokenId = 1;
 
     await equip.mint(owner.address, tokenId);
@@ -55,7 +55,7 @@ describe('Render Utils', async function () {
       'ipfs://res1.jpg',
       [],
     );
-    await equip.addEquippableAssetEntry(resId2, 1, someBase.address, 'ipfs://res2.jpg', [1, 3, 4]);
+    await equip.addEquippableAssetEntry(resId2, 1, someCatalog.address, 'ipfs://res2.jpg', [1, 3, 4]);
     await equip.addEquippableAssetEntry(
       resId3,
       0,
@@ -63,7 +63,7 @@ describe('Render Utils', async function () {
       'ipfs://res3.jpg',
       [],
     );
-    await equip.addEquippableAssetEntry(resId4, 2, someBase.address, 'ipfs://res4.jpg', [4]);
+    await equip.addEquippableAssetEntry(resId4, 2, someCatalog.address, 'ipfs://res4.jpg', [4]);
     await equip.addAssetToToken(tokenId, resId, 0);
     await equip.addAssetToToken(tokenId, resId2, 0);
     await equip.addAssetToToken(tokenId, resId3, resId);
@@ -115,13 +115,13 @@ describe('Render Utils', async function () {
     it('can get active assets', async function () {
       expect(await renderUtilsEquip.getExtendedActiveAssets(equip.address, tokenId)).to.eql([
         [resId, bn(0), 10, ethers.constants.AddressZero, 'ipfs://res1.jpg', []],
-        [resId2, bn(1), 5, someBase.address, 'ipfs://res2.jpg', [bn(1), bn(3), bn(4)]],
+        [resId2, bn(1), 5, someCatalog.address, 'ipfs://res2.jpg', [bn(1), bn(3), bn(4)]],
       ]);
     });
 
     it('can get pending assets', async function () {
       expect(await renderUtilsEquip.getExtendedPendingAssets(equip.address, tokenId)).to.eql([
-        [resId4, bn(2), bn(0), bn(0), someBase.address, 'ipfs://res4.jpg', [bn(4)]],
+        [resId4, bn(2), bn(0), bn(0), someCatalog.address, 'ipfs://res4.jpg', [bn(4)]],
         [resId3, bn(0), bn(1), resId, ethers.constants.AddressZero, 'ipfs://res3.jpg', []],
       ]);
     });

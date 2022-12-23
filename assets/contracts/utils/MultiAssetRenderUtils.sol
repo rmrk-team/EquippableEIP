@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.16;
 
-import "../IMultiAsset.sol";
+import "../IERC5773.sol";
 
 error TokenHasNoAssets();
 
@@ -57,7 +57,7 @@ contract MultiAssetRenderUtils {
         virtual
         returns (ActiveAsset[] memory)
     {
-        IMultiAsset target_ = IMultiAsset(target);
+        IERC5773 target_ = IERC5773(target);
 
         uint64[] memory assets = target_.getActiveAssets(tokenId);
         uint16[] memory priorities = target_.getActiveAssetPriorities(tokenId);
@@ -101,7 +101,7 @@ contract MultiAssetRenderUtils {
         virtual
         returns (PendingAsset[] memory)
     {
-        IMultiAsset target_ = IMultiAsset(target);
+        IERC5773 target_ = IERC5773(target);
 
         uint64[] memory assets = target_.getPendingAssets(tokenId);
         uint256 len = assets.length;
@@ -146,7 +146,7 @@ contract MultiAssetRenderUtils {
         uint256 tokenId,
         uint64[] calldata assetIds
     ) public view virtual returns (string[] memory) {
-        IMultiAsset target_ = IMultiAsset(target);
+        IERC5773 target_ = IERC5773(target);
         uint256 len = assetIds.length;
         string[] memory assets = new string[](len);
         for (uint256 i; i < len; ) {
@@ -169,7 +169,7 @@ contract MultiAssetRenderUtils {
         view
         returns (string memory)
     {
-        IMultiAsset target_ = IMultiAsset(target);
+        IERC5773 target_ = IERC5773(target);
         uint16[] memory priorities = target_.getActiveAssetPriorities(tokenId);
         uint64[] memory assets = target_.getActiveAssets(tokenId);
         uint256 len = priorities.length;
