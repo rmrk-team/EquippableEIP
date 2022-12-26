@@ -61,7 +61,7 @@ The interface of the core smart contract of the equippable tokens.
 ```solidity
 /// @title EIP-X Composable NFTs utilizing equippable parts
 /// @dev See https://eips.ethereum.org/EIPS/eip-x
-/// @dev Note: the ERC-165 identifier for this interface is 0x.
+/// @dev Note: the ERC-165 identifier for this interface is 0xd239c420.
 
 pragma solidity ^0.8.16;
 
@@ -229,7 +229,8 @@ The interface of the Catalog containing the equippable parts.
 ```solidity
 /**
  * @title ICatalog
- * @notice An interface Base storage for equippable module.
+ * @notice An interface Catalog for equippable module.
+ * @dev Note: the ERC-165 identifier for this interface is 0xd912401f.
  */
 
 pragma solidity ^0.8.16;
