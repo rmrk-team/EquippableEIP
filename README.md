@@ -391,11 +391,21 @@ interface ICatalog is IERC165 {
 
 Designing the proposal, we considered the following questions:
 
-1. **Why are we using a Catalog in stead of supporting NFT equipping?**
+1. **Why are we using a Catalog in stead of supporting direct NFT equipping?**
 
-If NFTs could be equipped into other NFTs the resulting composite would be unpredictable. Suche behaviour would also enforce the issue we are highlighting in the [Reducing clutter](#reducing-clutter) section.
+If NFTs could be directly equipped into other NFTs without any oversight, the resulting composite would be unpredictable. Catalog allows for parts to be pre-verified in order to result in a composite that composes as expected.
 
-Catalog allows for parts to be pre-verified in order to result in a composite that composes as expected.
+2. **Why do we propose two types of parts?**
+
+Some parts, that are the same for all of the tokens, don't make sense to be represented by individual NFTs. This reduces the clutter of the owner's wallet as well as introduces an efficient way of disseminating repetitive assets tied to NFTs.
+
+The slot parts allow for equipping NFTs into them. This provides the ability to equip unrelated NFT collections into the base NFT after the unrelated collection has been verified to compose properly.
+
+Having two parts allows for support of numerous use cases and, since the proposal doesn't enforce the use of both it can be applied in any configuration needed.
+
+3. **Why is a method to get all of the equipped parts not included?**
+
+Getting all parts might not be an operation necessary for all implementers. Additionally, it can be added either as an extension, doable with hooks, or can be emulated using an indexer.
 
 ## Backwards Compatibility
 
