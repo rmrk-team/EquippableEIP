@@ -1,9 +1,9 @@
 ---
-eip: eip-xxxx
+eip: 6220
 title: Composable NFTs utilizing Equippable Parts
 description: An interface for Composable non-fungible tokens through fixed and slot parts equipping.
 author: Bruno Škvorc (@Swader), Cicada (@CicadaNCR), Steven Pineda (@steven2308), Stevan Bogosavljevic (@stevyhacker), Jan Turk (@ThunderDeliverer)
-discussions-to:
+discussions-to: https://ethereum-magicians.org/t/eip-6220-composable-nfts-utilizing-equippable-parts/12289
 status: Draft
 type: Standards Track
 category: ERC
@@ -34,7 +34,7 @@ In the four years since [EIP-721](./eip-721.md) was published, the need for addi
 
 ### Composing
 
-NFTs can work together to create a greater construct. Prior to this proposal, multiple NFTs could be composed into a single construct either by checking all of the compatible NFTs associated with a given account and used indiscriminately (which could result in unexpected result if there was more than one NFT intended to be used in the same slot), or by keeping a custom ledger of parts to compose together (either in a smart contract or an off-chain database). This proposal establishes a standrardized framework for composable NFTs, where a single NFT can select which parts should be a part of the whole. Composing NFTs in such a way allows for virtually unbounded customization of the base NFT. An example of this could be a movie NFT. Some parts, like credits, should be fixed. Other parts, like scenes, should be interchangeable, so that various releases (base version, extended cuts, anniversary editions,...) can be replaced.
+NFTs can work together to create a greater construct. Prior to this proposal, multiple NFTs could be composed into a single construct either by checking all of the compatible NFTs associated with a given account and used indiscriminately (which could result in unexpected result if there was more than one NFT intended to be used in the same slot), or by keeping a custom ledger of parts to compose together (either in a smart contract or an off-chain database). This proposal establishes a standardized framework for composable NFTs, where a single NFT can select which parts should be a part of the whole. Composing NFTs in such a way allows for virtually unbounded customization of the base NFT. An example of this could be a movie NFT. Some parts, like credits, should be fixed. Other parts, like scenes, should be interchangeable, so that various releases (base version, extended cuts, anniversary editions,...) can be replaced.
 
 ### Token progression
 
@@ -60,7 +60,7 @@ The interface of the core smart contract of the equippable tokens.
 
 ```solidity
 /// @title EIP-X Composable NFTs utilizing Equippable Parts
-/// @dev See https://eips.ethereum.org/EIPS/eip-x
+/// @dev See https://eips.ethereum.org/EIPS/eip-6220
 /// @dev Note: the ERC-165 identifier for this interface is 0xd239c420.
 
 pragma solidity ^0.8.16;
@@ -414,19 +414,19 @@ The Equippable token standard has been made compatible with [EIP-721](./eip-721.
 
 ## Test Cases
 
-Tests are included in [`equippable.ts`](../assets/eip-xxxx/test/equippable.ts).
+Tests are included in [`equippableParts.ts`](../assets/eip-6220/test/equippableParts.ts) and [`equippableSlots.ts`](../assets/eip-6220/test/equippableSlots.ts).
 
 To run them in terminal, you can use the following commands:
 
 ```
-cd ../assets/eip-xxxx
+cd ../assets/eip-6220
 npm install
 npx hardhat test
 ```
 
 ## Reference Implementation
 
-See [`EquippableToken.sol`](../assets/eip-xxxx/contracts/EquippableToken.sol).
+See [`EquippableToken.sol`](../assets/eip-6220/contracts/EquippableToken.sol).
 
 
 ## Security Considerations
