@@ -48,7 +48,7 @@ An equippable NFT can also be used to track merit. An example of this is academi
 
 Many use cases that use utility NFTs eventually award holders of the tokens with additional tokens that provide additional utility. Gaming NFTs often use other NFTs to represent items owned by the base NFT. Both of the examples can mean that, in a long term scenario, the NFT owner's wallet could contain hundredths NFTs for a single use case. Not only does this mean that the wallet is cluttered, but the interface may soon become virtually unusable and NFTs might get buried within the wallet. By supporting NFTs outlined in this proposal use cases can only use a single NFT to track virtually unbounded utility and in turn allow the owner of the token to easily traverse owned NFTs.
 
-A great example of this is a DAO membership NFT. As a DAO grows, it could grow into multiple factions and sub-factions which would each require its own access NFT in order to access them. An equippable base NFT would allow the access NFTs to be replaced by equippable access passes, thus reducing clutter of one's NFT inventory.
+A great example of this is a DAO membership NFT. As a DAO grows, it could grow into multiple factions and sub-factions which would each require its own access NFT in order to access them. An equippable base NFT would allow the access NFTs to be replaced by equippable access passes, thus reducing clutter of one's NFT inventory. These access passes could be in a form of fixed parts. Fixed parts have their own metadata, while they are not NFTs in their own right. This means that the owner's wallet wouldn't need to hold them, but they would appear when the membership NFT is rendered and would function when trying to acces the desired gated part of the DAO.
 
 ## Specification
 
@@ -224,7 +224,7 @@ interface IEquippable is IERC5773 {
 
 ### Catalog
 
-The interface of the Catalog containing the equippable parts.
+The interface of the Catalog containing the equippable parts. Catalogs are collections of equippable fixed and slot parts and are not restricted to a single collection, but can support any number of NFT collections.
 
 ```solidity
 /**
@@ -398,7 +398,7 @@ If NFTs could be directly equipped into other NFTs without any oversight, the re
 
 2. **Why do we propose two types of parts?**
 
-Some parts, that are the same for all of the tokens, don't make sense to be represented by individual NFTs. This reduces the clutter of the owner's wallet as well as introduces an efficient way of disseminating repetitive assets tied to NFTs.
+Some parts, that are the same for all of the tokens, don't make sense to be represented by individual NFTs, so they can be represented by fixed parts. This reduces the clutter of the owner's wallet as well as introduces an efficient way of disseminating repetitive assets tied to NFTs.
 
 The slot parts allow for equipping NFTs into them. This provides the ability to equip unrelated NFT collections into the base NFT after the unrelated collection has been verified to compose properly.
 
@@ -407,6 +407,20 @@ Having two parts allows for support of numerous use cases and, since the proposa
 3. **Why is a method to get all of the equipped parts not included?**
 
 Getting all parts might not be an operation necessary for all implementers. Additionally, it can be added either as an extension, doable with hooks, or can be emulated using an indexer.
+
+4. **Should Catalog be limited to support one NFT collection at a time or be able to support any nunmber of collections?**
+
+As the Catalog is designed in a way that is agnostic to the use case using it, it makes sense to us to support as wide reusability as possible. It could be limited to a single collection, but we feel that limiting it in the proposal would reduce the quality of the proposal. Having one Catalog supporting multiple collections allows for optimized operation and reduced gas prices when deploying it and setting fixed as well as slot parts.
+
+### Fixed parts
+
+Fixed parts are defined and contained in the Catalog. They have their own metadata and are not meant to change through the lifecycle of the NFT. They can be replaced by equipping another fixed part, but their content is not meant to be changed.
+
+The benefit of fixed parts is that they represent equippable parts that can be equipped by any number of tokens in any number of collections and only need to be defined once.
+
+### Slot parts
+
+Slot parts are defined and contained in the Catalog. They don't have their own metadata, but rather support equipping of selected NFT collections into them. This allows for an equippable modifialbe content of the base NFT controlled by its owner. As they can be equipped into any number of tokens of any number of collections, they allow for reliable composing of the final tokens by vetting which NFTs can be equipped by a given slot once and then reused any number of times.
 
 ## Backwards Compatibility
 
