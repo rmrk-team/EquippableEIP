@@ -410,11 +410,13 @@ Getting all parts might not be an operation necessary for all implementers. Addi
 
 4. **Should Catalog be limited to support one NFT collection at a time or be able to support any nunmber of collections?**
 
-As the Catalog is designed in a way that is agnostic to the use case using it, it makes sense to us to support as wide reusability as possible. It could be limited to a single collection, but we feel that limiting it in the proposal would reduce the quality of the proposal. Having one Catalog supporting multiple collections allows for optimized operation and reduced gas prices when deploying it and setting fixed as well as slot parts.
+As the Catalog is designed in a way that is agnostic to the use case using it, it makes sense to support as wide reusability as possible. Having one Catalog supporting multiple collections allows for optimized operation and reduced gas prices when deploying it and setting fixed as well as slot parts.
 
 ### Fixed parts
 
-Fixed parts are defined and contained in the Catalog. They have their own metadata and are not meant to change through the lifecycle of the NFT. They can be replaced by equipping another fixed part, but their content is not meant to be changed.
+Fixed parts are defined and contained in the Catalog. They have their own metadata and are not meant to change through the lifecycle of the NFT. 
+
+A fixed part cannot be replaced.
 
 The benefit of fixed parts is that they represent equippable parts that can be equipped by any number of tokens in any number of collections and only need to be defined once.
 
