@@ -17,7 +17,7 @@ The Composable NFTs utilizing equippable parts standard extends [EIP-721](./eip-
 
 Tokens are able to equip the parts by cherry picking the list of parts from a Catalog for that NFT instance. Catalogs contain parts from which NFTs can be composed.
 
-This proposal introduces two types of parts; slot type of parts and fixed type of parts. The slot type of parts allow for other NFT collections to be equipped into them, while fixed parts are full components with ther own metadata.
+This proposal introduces two types of parts; slot type of parts and fixed type of parts. The slot type of parts allow for other NFT collections to be equipped into them, while fixed parts are full components with their own metadata.
 
 Equipping a part into an NFT doesn't generate a new token, but rather adds another component to be rendered when retrieving the token.
 
@@ -34,19 +34,19 @@ In the four years since [EIP-721](./eip-721.md) was published, the need for addi
 
 ### Composing
 
-NFTs can work together to create a greater construct.  Until this porposal, multiple NFTs could be composed into a single construct either by checking all of the compatible NFTs associated with a given account and used indiscriminately (which could result in unexpected result if there was more than one NFT intended to be used in the same slot), or by keeping a custom ledger of parts to compose together (either in a smart contract or an off-chain database). This proposal establishes a standrardized framework for composable NFTs, where a single NFT can select which parts should be a part of the whole. Composing NFTs in such a way allows for virtually umbounded customization of the base NFT. An example of this could be a movie NFT. Some parts, like credits, should be fixed. Other parts, like scenes, should be interchangeable, so that various releases (base version, extended cuts, aniversary editions,...) can be replaced.
+NFTs can work together to create a greater construct. Prior to this proposal, multiple NFTs could be composed into a single construct either by checking all of the compatible NFTs associated with a given account and used indiscriminately (which could result in unexpected result if there was more than one NFT intended to be used in the same slot), or by keeping a custom ledger of parts to compose together (either in a smart contract or an off-chain database). This proposal establishes a standrardized framework for composable NFTs, where a single NFT can select which parts should be a part of the whole. Composing NFTs in such a way allows for virtually unbounded customization of the base NFT. An example of this could be a movie NFT. Some parts, like credits, should be fixed. Other parts, like scenes, should be interchangeable, so that various releases (base version, extended cuts, anniversary editions,...) can be replaced.
 
 ### Token progression
 
-As the token progresses through various stages of its existence, it can attain or be awarded various parts. This can be explained in terms of gaiming. A character could be represented by an NFT utilizing this proposal and would be able to equip gear acquired through the gameplay activities and as it progresses further in the game, better items would be available. In stead of having numerous NFTs representing the items collected through its progression, equippable parts can be unlocked and the NFT owner would be able to decide which items to equip and which to keep in the inventory (not equipped).
+As the token progresses through various stages of its existence, it can attain or be awarded various parts. This can be explained in terms of gaming. A character could be represented by an NFT utilizing this proposal and would be able to equip gear acquired through the gameplay activities and as it progresses further in the game, better items would be available. In stead of having numerous NFTs representing the items collected through its progression, equippable parts can be unlocked and the NFT owner would be able to decide which items to equip and which to keep in the inventory (not equipped).
 
 ### Merit tracking
 
-An equippable NFT can also be used to track merit. An example of this is academic merit. The equippable NFT in this case would represent a sort of digital protfolio of academic achievements, where the owner would be able to equip their diplommas, published articles and awards for all to see.
+An equippable NFT can also be used to track merit. An example of this is academic merit. The equippable NFT in this case would represent a sort of digital portfolio of academic achievements, where the owner would be able to equip their diplomas, published articles and awards for all to see.
 
 ### Portfolio organization
 
-Many use cases that use utility NFTs eventually award holders of the tokens with additional tokens that provide additional utility. Gaming NFTs often use other NFTs to represent items owned by the base NFT. Both of the examples can mean that, in a long term scenario, the NFT owner's wallet could contain hundredths NFTs for a single use case. Not only does this mean that the wallet is cluttered, but the interface may soon become virtaully unusable and NFTs might get burried within the wallet. By supporting NFTs outlined in this proposal use cases can only use a single NFT to track virtually unbounded utility and in turn allow the owner of the token to easily traverse owned NFTs.
+Many use cases that use utility NFTs eventually award holders of the tokens with additional tokens that provide additional utility. Gaming NFTs often use other NFTs to represent items owned by the base NFT. Both of the examples can mean that, in a long term scenario, the NFT owner's wallet could contain hundredths NFTs for a single use case. Not only does this mean that the wallet is cluttered, but the interface may soon become virtually unusable and NFTs might get buried within the wallet. By supporting NFTs outlined in this proposal use cases can only use a single NFT to track virtually unbounded utility and in turn allow the owner of the token to easily traverse owned NFTs.
 
 A great example of this is a DAO membership NFT. As a DAO grows, it could grow into multiple factions and sub-factions which would each require its own access NFT in order to access them. An equippable base NFT would allow the access NFTs to be replaced by equippable access passes, thus reducing clutter of one's NFT inventory.
 
