@@ -15,7 +15,7 @@ requires: 165, 721, 5773, 6059
 
 The Composable NFTs utilizing equippable parts standard extends [EIP-721](./eip-721.md) by allowing the NFTs to selectively add parts to themselves via equipping.
 
-Tokens can be composed by cherry picking the list of parts from a Catalog for each NFT instance, and are able to equip other NFTs into slots, which are also defined within the Catalog. Catalogs contain parts from which NFTs can be composed.
+Tokens are able to equip the parts by cherry picking the list of parts from a Catalog for that NFT instance. Catalogs contain parts from which NFTs can be composed.
 
 This proposal introduces two types of parts; slot type of parts and fixed type of parts. The slot type of parts allow for other NFT collections to be equipped into them, while fixed parts are full components with their own metadata.
 
@@ -46,7 +46,7 @@ An equippable NFT can also be used to track merit. An example of this is academi
 
 ### Provable Digital Scarcity
 
-Most NFT projects today are only mock-scarce. Even with a limited supply the utility of these NFTs (if any) is uncapped. As an example, you can log into 500 different instances of a game with the same wallet using the same NFT. You can equip the same hat onto 500 different in-game avatars at the same time, because its visual representation is just a client-side thing. 
+The majority of current NFT projects are only mock-scarce. Even with a limited supply of tokens, the utility of these (if any) is uncapped. As an example, you can log into 500 different instances of the same game using the same wallet and the same NFT. You can then equip the same hat onto 500 different in-game avatars at the same time, because its visual representation is just a client-side mechanic. 
 
 With this proposal, if a hat is equipped on one avatar (by being sent into it and then equipped), it cannot be on another. This provides real digital scarcity.
 
