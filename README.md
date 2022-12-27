@@ -1,6 +1,6 @@
 ---
 eip: eip-xxxx
-title: Composable NFTs utilizing equippable parts
+title: Composable NFTs utilizing Equippable Parts
 description: 
 author: Bruno Škvorc (@Swader), Cicada (@CicadaNCR), Steven Pineda (@steven2308), Stevan Bogosavljevic (@stevyhacker), Jan Turk (@ThunderDeliverer)
 discussions-to:
@@ -59,7 +59,7 @@ The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL 
 The interface of the core smart contract of the equippable tokens.
 
 ```solidity
-/// @title EIP-X Composable NFTs utilizing equippable parts
+/// @title EIP-X Composable NFTs utilizing Equippable Parts
 /// @dev See https://eips.ethereum.org/EIPS/eip-x
 /// @dev Note: the ERC-165 identifier for this interface is 0xd239c420.
 
