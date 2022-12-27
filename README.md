@@ -61,7 +61,7 @@ The interface of the core smart contract of the equippable tokens.
 ```solidity
 /// @title EIP-X Composable NFTs utilizing Equippable Parts
 /// @dev See https://eips.ethereum.org/EIPS/eip-6220
-/// @dev Note: the ERC-165 identifier for this interface is 0xd239c420.
+/// @dev Note: the ERC-165 identifier for this interface is 0x28bc9ae4.
 
 pragma solidity ^0.8.16;
 
@@ -150,6 +150,36 @@ interface IEquippable is IERC5773 {
         uint64 indexed slotPartId,
         address parentAddress
     );
+
+    /**
+     * @notice Used to equip a child into a token.
+     * @dev The `IntakeEquip` stuct contains the following data:
+     *  [
+     *      tokenId,
+     *      childIndex,
+     *      assetId,
+     *      slotPartId,
+     *      childAssetId
+     *  ]
+     * @param data An `IntakeEquip` struct specifying the equip data
+     */
+    function equip(
+        IntakeEquip memory data
+    ) external;
+
+    /**
+     * @notice Used to unequip child from parent token.
+     * @dev This can only be called by the owner of the token or by an account that has been granted permission to
+     *  manage the given token by the current owner.
+     * @param tokenId ID of the parent from which the child is being unequipped
+     * @param assetId ID of the parent's asset that contains the `Slot` into which the child is equipped
+     * @param slotPartId ID of the `Slot` from which to unequip the child
+     */
+    function unequip(
+        uint256 tokenId,
+        uint64 assetId,
+        uint64 slotPartId
+    ) external;
 
     /**
      * @notice Used to check whether the token has a given child equipped.
