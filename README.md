@@ -1,7 +1,7 @@
 ---
 eip: eip-xxxx
 title: Composable NFTs utilizing Equippable Parts
-description: 
+description: An interface for Composable non-fungible tokens through fixed and slot parts equipping.
 author: Bruno Škvorc (@Swader), Cicada (@CicadaNCR), Steven Pineda (@steven2308), Stevan Bogosavljevic (@stevyhacker), Jan Turk (@ThunderDeliverer)
 discussions-to:
 status: Draft
