@@ -414,7 +414,7 @@ The Equippable token standard has been made compatible with [EIP-721](./eip-721.
 
 ## Test Cases
 
-Tests are included in [`equippableParts.ts`](../assets/eip-6220/test/equippableParts.ts) and [`equippableSlots.ts`](../assets/eip-6220/test/equippableSlots.ts).
+Tests are included in [`equippableFixedParts.ts`](../assets/eip-6220/test/equippableFixedParts.ts) and [`equippableSlotParts.ts`](../assets/eip-6220/test/equippableSlotParts.ts).
 
 To run them in terminal, you can use the following commands:
 
