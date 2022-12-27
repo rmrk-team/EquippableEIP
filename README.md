@@ -422,7 +422,7 @@ The benefit of fixed parts is that they represent equippable parts that can be e
 
 ### Slot parts
 
-Slot parts are defined and contained in the Catalog. They don't have their own metadata, but rather support equipping of selected NFT collections into them. This allows for an equippable modifialbe content of the base NFT controlled by its owner. As they can be equipped into any number of tokens of any number of collections, they allow for reliable composing of the final tokens by vetting which NFTs can be equipped by a given slot once and then reused any number of times.
+Slot parts are defined and contained in the Catalog. They don't have their own metadata, but rather support equipping of selected NFT collections into them. The tokens equipped into the slots however, contain their own metadata. This allows for an equippable modifialbe content of the base NFT controlled by its owner. As they can be equipped into any number of tokens of any number of collections, they allow for reliable composing of the final tokens by vetting which NFTs can be equipped by a given slot once and then reused any number of times.
 
 ## Backwards Compatibility
 
