@@ -48,7 +48,7 @@ An equippable NFT can also be used to track merit. An example of this is academi
 
 The majority of current NFT projects are only mock-scarce. Even with a limited supply of tokens, the utility of these (if any) is uncapped. As an example, you can log into 500 different instances of the same game using the same wallet and the same NFT. You can then equip the same hat onto 500 different in-game avatars at the same time, because its visual representation is just a client-side mechanic. 
 
-With this proposal, if a hat is equipped on one avatar (by being sent into it and then equipped), it cannot be on another. This provides real digital scarcity.
+This proposal adds the ability to enforce that, if a hat is equipped on one avatar (by being sent into it and then equipped), it cannot be equipped on another. This provides real digital scarcity.
 
 ## Specification
 
@@ -424,7 +424,7 @@ Designing the proposal, we considered the following questions:
 
 1. **Why are we using a Catalog in stead of supporting direct NFT equipping?**
 
-If NFTs could be directly equipped into other NFTs without any oversight, the resulting composite would be unpredictable. Catalog allows for parts to be pre-verified in order to result in a composite that composes as expected. Catalog also has the advantage of defining reusable fixed parts.
+If NFTs could be directly equipped into other NFTs without any oversight, the resulting composite would be unpredictable. Catalog allows for parts to be pre-verified in order to result in a composite that composes as expected. Another benefit of Catalog is the ability of defining reusable fixed parts.
 
 2. **Why do we propose two types of parts?**
 
